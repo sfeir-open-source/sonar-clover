@@ -25,33 +25,43 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
 import java.io.File;
 
 public class CloverSensor implements Sensor, CoverageExtension {
+  public static final String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
+  public static final String PLUGIN_KEY = "clover";
+  private final FileSystem fs;
+  private final CloverXmlReportParserFactory factory;
+  private Settings settings;
 
-  private CloverSettings settings;
-
-  public CloverSensor(CloverSettings settings) {
+  public CloverSensor(Settings settings, FileSystem fs, CloverXmlReportParserFactory factory) {
     this.settings = settings;
+    this.fs = fs;
+    this.factory = factory;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    return settings.isEnabled(project);
+    if (project.getAnalysisType().isDynamic(true) && fs.hasFiles(fs.predicates().hasLanguage("java"))) {
+      return PLUGIN_KEY.equals(settings.getString("sonar.java.coveragePlugin"));
+    }
+    return false;
   }
 
   public void analyse(Project project, SensorContext context) {
     File report = getReportFromProperty(project);
     if (reportExists(report)) {
-      new XmlReportParser(new FileProvider(project, context), context).collect(report);
+      factory.create(project, context).collect(report);
     } else {
       LoggerFactory.getLogger(getClass()).info("Clover XML report not found");
     }
   }
 
   private File getReportFromProperty(Project project) {
-    String path = settings.getReportPath();
+    String path = settings.getString(REPORT_PATH_PROPERTY);
     if (StringUtils.isNotEmpty(path)) {
       return project.getFileSystem().resolvePath(path);
     }

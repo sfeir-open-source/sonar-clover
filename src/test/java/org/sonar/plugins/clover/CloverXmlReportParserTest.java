@@ -47,9 +47,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class XmlReportParserTest {
+public class CloverXmlReportParserTest {
 
-  private XmlReportParser reportParser;
+  private CloverXmlReportParser reportParser;
   private SensorContext context;
   private File xmlFile;
 
@@ -67,7 +67,7 @@ public class XmlReportParserTest {
         return sonarFile;
       }
     });
-    reportParser = new XmlReportParser(fp, context);
+    reportParser = new CloverXmlReportParser(fp, context);
 
   }
 

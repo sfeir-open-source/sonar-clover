@@ -17,17 +17,22 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-
 package org.sonar.plugins.clover;
 
-public interface CloverConstants {
+import org.junit.Test;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.resources.Project;
 
-  String LICENSE_PROPERTY = "sonar.clover.license.secured";
-  String VERSION_PROPERTY = "sonar.clover.version";
-  String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-  String MAVEN_GROUP_ID = "com.atlassian.maven.plugins";
-  String MAVEN_ARTIFACT_ID = "maven-clover2-plugin";
-  String MAVEN_DEFAULT_VERSION = "3.0.5";
-  String PLUGIN_KEY = "clover";
+public class CloverXmlReportParserFactoryTest {
+  @Test
+  public void should_create_xml_parser() throws Exception {
+    Project project = mock(Project.class);
+    SensorContext context = mock(SensorContext.class);
+
+    CloverXmlReportParser parser = new CloverXmlReportParserFactory().create(project, context);
+    assertThat(parser).isNotNull();
+  }
 }

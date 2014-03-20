@@ -44,7 +44,7 @@
   </ciManagement>
 
   <properties>
-    <sonar.version>3.7.4</sonar.version>
+    <sonar.version>4.2-RC3</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
   </properties>
@@ -80,6 +80,11 @@
       <artifactId>fest-assert</artifactId>
       <version>1.4</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
     </dependency>
   </dependencies>
 </project>

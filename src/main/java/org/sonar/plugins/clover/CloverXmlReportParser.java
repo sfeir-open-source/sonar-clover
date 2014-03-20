@@ -40,14 +40,14 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.text.ParseException;
 
-public class XmlReportParser {
+public class CloverXmlReportParser {
 
-  private static final Logger LOG = LoggerFactory.getLogger(XmlReportParser.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CloverXmlReportParser.class);
   private final FileProvider fileProvider;
   private SensorContext context;
   final CoverageMeasuresBuilder fileMeasuresBuilder = CoverageMeasuresBuilder.create();
 
-  XmlReportParser(FileProvider fileProvider, SensorContext context) {
+  CloverXmlReportParser(FileProvider fileProvider, SensorContext context) {
     this.context = context;
     this.fileProvider = fileProvider;
   }
@@ -80,52 +80,17 @@ public class XmlReportParser {
     SMInputCursor projectCursor = rootCursor.descendantElementCursor("project");
     SMInputCursor projectChildrenCursor = projectCursor.advance().childElementCursor();
     projectChildrenCursor.setFilter(new SimpleFilter(SMEvent.START_ELEMENT));
-
-    SMInputCursor metricsCursor = projectChildrenCursor.advance();
-//    analyseMetricsNode(null, metricsCursor);
+    //Skip the metrics tag.
+    projectChildrenCursor.advance();
     collectPackageMeasures(projectChildrenCursor);
   }
-//
-//  private void analyseMetricsNode(Resource resource, SMInputCursor metricsCursor) throws ParseException, XMLStreamException {
-//    int elements = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("elements"));
-//    if (elements == 0) {
-//      return;
-//    }
-//
-//    int statements = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("statements"));
-//    int methods = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("methods"));
-//    int conditionals = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("conditionals"));
-//    int coveredElements = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("coveredelements"));
-//    int coveredStatements = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("coveredstatements"));
-//    int coveredMethods = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("coveredmethods"));
-//    int coveredConditionals = (int) ParsingUtils.parseNumber(metricsCursor.getAttrValue("coveredconditionals"));
-//
-//    context.saveMeasure(resource, CoreMetrics.COVERAGE, calculateCoverage(coveredElements, elements));
-//
-//    context.saveMeasure(resource, CoreMetrics.LINE_COVERAGE, calculateCoverage(coveredMethods + coveredStatements, methods + statements));
-//    context.saveMeasure(resource, CoreMetrics.LINES_TO_COVER, (double) (statements + methods));
-//    context.saveMeasure(resource, CoreMetrics.UNCOVERED_LINES, (double) (statements + methods - coveredStatements - coveredMethods));
-//
-//    if (conditionals > 0) {
-//      context.saveMeasure(resource, CoreMetrics.BRANCH_COVERAGE, calculateCoverage(coveredConditionals, conditionals));
-//      context.saveMeasure(resource, CoreMetrics.CONDITIONS_TO_COVER, (double) (conditionals));
-//      context.saveMeasure(resource, CoreMetrics.UNCOVERED_CONDITIONS, (double) (conditionals - coveredConditionals));
-//    }
-//  }
-//
-//  private double calculateCoverage(int coveredElements, int elements) {
-//    if (elements > 0) {
-//      return scaleValue(100.0 * ((double) coveredElements / (double) elements));
-//    }
-//    return 0.0;
-//  }
 
   private void collectPackageMeasures(SMInputCursor packCursor) throws ParseException, XMLStreamException {
     while (packCursor.getNext() != null) {
       SMInputCursor packChildrenCursor = packCursor.descendantElementCursor();
       packChildrenCursor.setFilter(new SimpleFilter(SMEvent.START_ELEMENT));
-      //Skip the metrics node.
-      SMInputCursor metricsCursor = packChildrenCursor.advance();
+      //Skip the metrics tag.
+      packChildrenCursor.advance();
       collectFileMeasures(packChildrenCursor);
     }
   }
