@@ -44,7 +44,7 @@ public class CloverSensor implements Sensor, CoverageExtension {
   public void analyse(Project project, SensorContext context) {
     File report = getReportFromProperty(project);
     if (reportExists(report)) {
-      new XmlReportParser(context).collect(report);
+      new XmlReportParser(new FileProvider(project, context), context).collect(report);
     } else {
       LoggerFactory.getLogger(getClass()).info("Clover XML report not found");
     }

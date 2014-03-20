@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1395225636034" clover="3.2.2">
+   <project timestamp="1395225633738" name="clover-sample 1.0-SNAPSHOT">
+      <metrics conditionals="4" methods="2" classes="1" files="1" packages="1" coveredstatements="4" complexity="4" loc="15" ncloc="13" coveredmethods="1" coveredconditionals="3" statements="6" coveredelements="8" elements="12"/>
+      <package name="default-pkg">
+         <metrics classes="1" methods="2" conditionals="4" files="1" ncloc="13" coveredstatements="4" coveredmethods="1" complexity="4" coveredconditionals="3" statements="6" loc="15" coveredelements="8" elements="12"/>
+         <file name="SampleClass.java" path="/home/benzonico/Development/SonarSource/clover-sample/src/main/java/SampleClass.java">
+            <metrics classes="1" methods="2" conditionals="4" ncloc="13" coveredstatements="4" coveredmethods="1" complexity="4" coveredconditionals="3" statements="6" loc="15" coveredelements="8" elements="12"/>
+            <class name="SampleClass">
+               <metrics methods="2" conditionals="4" coveredstatements="4" coveredmethods="1" complexity="4" coveredconditionals="3" statements="6" coveredelements="8" elements="12"/>
+            </class>
+            <line num="3" count="2" visibility="public" complexity="3" type="method" signature="firstLetter(String) : String"/>
+            <line num="4" count="2" type="stmt"/>
+            <line num="4" falsecount="1" type="cond" truecount="1"/>
+            <line num="5" count="1" type="stmt"/>
+            <line num="6" count="1" type="stmt"/>
+            <line num="6" falsecount="1" type="cond" truecount="0"/>
+            <line num="7" count="0" type="stmt"/>
+            <line num="9" count="1" type="stmt"/>
+            <line num="12" count="0" visibility="public" complexity="1" type="method" signature="print(String) : void"/>
+            <line num="13" count="0" type="stmt"/>
+         </file>
+      </package>
+   </project>
+   <testproject timestamp="1395225633738" name="clover-sample 1.0-SNAPSHOT">
+      <metrics conditionals="0" methods="1" classes="1" files="1" packages="1" coveredstatements="2" complexity="1" loc="10" ncloc="8" coveredmethods="1" coveredconditionals="0" statements="2" coveredelements="3" elements="3"/>
+      <package name="default-pkg">
+         <metrics classes="1" methods="1" conditionals="0" files="1" ncloc="8" coveredstatements="2" coveredmethods="1" complexity="1" coveredconditionals="0" statements="2" loc="10" coveredelements="3" elements="3"/>
+         <file name="SampleClassTest.java" path="/home/benzonico/Development/SonarSource/clover-sample/src/test/java/SampleClassTest.java">
+            <metrics classes="1" methods="1" conditionals="0" ncloc="8" coveredstatements="2" coveredmethods="1" complexity="1" coveredconditionals="0" statements="2" loc="10" coveredelements="3" elements="3"/>
+            <class name="SampleClassTest">
+               <metrics conditionals="0" methods="1" coveredstatements="2" complexity="1" testpasses="2" testruns="2" coveredmethods="1" coveredconditionals="0" statements="2" testfailures="0" coveredelements="3" testduration="0.012" elements="3"/>
+            </class>
+            <line num="5" testsuccess="true" count="2" visibility="public" complexity="1" type="method" testduration="0.006" signature="testFirstLetter() : void"/>
+            <line num="7" count="2" type="stmt"/>
+            <line num="8" count="2" type="stmt"/>
+         </file>
+      </package>
+   </testproject>
+</coverage>

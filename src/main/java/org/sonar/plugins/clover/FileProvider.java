@@ -17,25 +17,26 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-
 package org.sonar.plugins.clover;
 
-import org.sonar.api.Properties;
-import org.sonar.api.Property;
-import org.sonar.api.SonarPlugin;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.resources.Project;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
 
-@Properties({
-  @Property(
-    key = CloverConstants.REPORT_PATH_PROPERTY,
-    name = "Report path",
-    description = "Absolute or relative path to XML report file.",
-    project = true, global = true)})
-public final class CloverPlugin extends SonarPlugin {
+public class FileProvider {
 
-  public List getExtensions() {
-    return Arrays.asList(CloverSettings.class, CloverSensor.class);
+  private final Project project;
+  private final SensorContext context;
+
+  public FileProvider(Project project, SensorContext context) {
+    this.project = project;
+    this.context = context;
   }
+
+  public org.sonar.api.resources.File fromIOFile(String path) {
+    return context.getResource(org.sonar.api.resources.File.fromIOFile(new File(new File(path).getAbsolutePath()), project));
+
+  }
+
 }
