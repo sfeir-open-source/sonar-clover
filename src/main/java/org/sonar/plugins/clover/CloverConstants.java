@@ -25,7 +25,7 @@ public interface CloverConstants {
   String LICENSE_PROPERTY = "sonar.clover.license.secured";
   String VERSION_PROPERTY = "sonar.clover.version";
   String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
-  
+
   String MAVEN_GROUP_ID = "com.atlassian.maven.plugins";
   String MAVEN_ARTIFACT_ID = "maven-clover2-plugin";
   String MAVEN_DEFAULT_VERSION = "3.0.5";

@@ -20,7 +20,6 @@
 
 package org.sonar.plugins.clover;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.staxmate.in.SMEvent;
 import org.codehaus.staxmate.in.SMFilterFactory;
@@ -185,18 +184,4 @@ public class XmlReportParser {
     }
     return ParsingUtils.parseNumber(metricsCursor.getAttrValue("elements")) > 0;
   }
-
-  protected String extractClassName(String filename) {
-    if (filename != null) {
-      filename = StringUtils.replaceChars(filename, '\\', '/');
-      filename = StringUtils.substringBeforeLast(filename, ".java");
-      if (filename.indexOf('/') >= 0) {
-        filename = StringUtils.substringAfterLast(filename, "/");
-      }
-    }
-    return filename;
-  }
-
-
-
 }

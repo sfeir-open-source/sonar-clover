@@ -20,14 +20,15 @@
 
 package org.sonar.plugins.clover;
 
+import org.apache.commons.lang.StringUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.AdditionalMatchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.resources.JavaFile;
-import org.sonar.api.resources.JavaPackage;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.test.TestUtils;
@@ -36,7 +37,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.argThat;
@@ -47,91 +47,56 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore
 public class XmlReportParserTest {
 
   private XmlReportParser reportParser;
   private SensorContext context;
   private File xmlFile;
-  private org.sonar.api.resources.File sonarFile;
 
   @Before
   public void before() throws URISyntaxException {
     xmlFile = TestUtils.getResource(getClass(), "clover.xml");
     context = mock(SensorContext.class);
     FileProvider fp = mock(FileProvider.class);
-    sonarFile = mock(org.sonar.api.resources.File.class);
-    when(fp.fromIOFile(anyString())).thenReturn(sonarFile);
+    //Return a sonar resource file with the name corresponding to invocation
+    when(fp.fromIOFile(anyString())).then(new Answer<org.sonar.api.resources.File>() {
+      @Override
+      public org.sonar.api.resources.File answer(InvocationOnMock invocationOnMock) throws Throwable {
+        org.sonar.api.resources.File sonarFile = mock(org.sonar.api.resources.File.class);
+        when(sonarFile.getName()).thenReturn((String) invocationOnMock.getArguments()[0]);
+        return sonarFile;
+      }
+    });
     reportParser = new XmlReportParser(fp, context);
 
   }
 
-//  @Test
-//  public void collectProjectMeasures() throws Exception {
-//    reportParser.collect(xmlFile);
-//    verify(context).saveMeasure(null, CoreMetrics.COVERAGE, 5.0); // coveredelements / elements
-//
-//    verify(context).saveMeasure(null, CoreMetrics.LINE_COVERAGE, 6.63); // covered methods + covered statements / methods + statements
-//    verify(context).saveMeasure(null, CoreMetrics.LINES_TO_COVER, 196.0);
-//    verify(context).saveMeasure(null, CoreMetrics.UNCOVERED_LINES, 183.0); // covered methods + covered statements
-//
-//    verify(context).saveMeasure(null, CoreMetrics.BRANCH_COVERAGE, 0.0); // covered conditionals / conditionals
-//    verify(context).saveMeasure(null, CoreMetrics.CONDITIONS_TO_COVER, 64.0); // covered_conditionals
-//    verify(context).saveMeasure(null, CoreMetrics.UNCOVERED_CONDITIONS, 64.0);
-//  }
-//
-//  @Test
-//  public void collectPackageMeasures() throws ParseException {
-//    reportParser.collect(xmlFile);
-//    final JavaPackage pac = new JavaPackage("org.sonar.samples");
-//    verify(context).saveMeasure(pac, CoreMetrics.COVERAGE, 28.89);
-//
-//    // lines
-//    verify(context).saveMeasure(pac, CoreMetrics.LINE_COVERAGE, 28.89);
-//    verify(context).saveMeasure(pac, CoreMetrics.LINES_TO_COVER, 45.0);
-//    verify(context).saveMeasure(pac, CoreMetrics.UNCOVERED_LINES, 32.0);
-//
-//    // no conditions
-//    verify(context, never()).saveMeasure(eq(pac), eq(CoreMetrics.BRANCH_COVERAGE), anyDouble());
-//    verify(context, never()).saveMeasure(eq(pac), eq(CoreMetrics.CONDITIONS_TO_COVER), anyDouble());
-//    verify(context, never()).saveMeasure(eq(pac), eq(CoreMetrics.UNCOVERED_CONDITIONS), anyDouble());
-//  }
-
   @Test
   public void parseClover232Format() throws ParseException, URISyntaxException {
     reportParser.collect(TestUtils.getResource(getClass(), "clover_2_3_2.xml"));
-    verify(context).saveMeasure(new JavaPackage("org.sonar.squid.sensors"), CoreMetrics.COVERAGE, 94.87);
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("ASTSensor.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 68.0)));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("ASTSensor.java")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 6.0)));
   }
+
   @Test
   public void parse_clover_3_2_2_Format() throws ParseException, URISyntaxException {
     reportParser.collect(TestUtils.getResource(getClass(), "clover_3_2_2.xml"));
-    verify(context).saveMeasure(eq(new JavaPackage("org.sonar.squid.sensors")), eq(CoreMetrics.COVERAGE), AdditionalMatchers.eq(66.67,0.01));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("SampleClass.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 8.0)));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("SampleClass.java")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 3.0)));
   }
 
   @Test
   public void collectFileMeasures() throws Exception {
     reportParser.collect(xmlFile);
-    verify(context).saveMeasure(eq(sonarFile), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 5.0)));
-    verify(context).saveMeasure(eq(sonarFile), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 0.0)));
-    verify(context).saveMeasure(eq(sonarFile), argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "4=1;5=1;6=2;8=1;9=1")));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 5.0)));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 0.0)));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "4=1;5=1;6=2;8=1;9=1")));
   }
 
   @Test
   public void collectFileHitsData() throws Exception {
     reportParser.collect(xmlFile);
-    verify(context).saveMeasure(eq(new JavaFile("org.sonar.samples.ClassUnderTest")), argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "4=1;5=1;6=2;8=1;9=1")));
-  }
-
-  @Test
-  public void clover1FileNameContainsPath() {
-    assertEquals("SampleClass", reportParser.extractClassName("C:\\src\\main\\java\\org\\sonar\\samples\\SampleClass.java"));
-
-    assertEquals("SampleClass", reportParser.extractClassName("/src/main/java/org/sonar/samples/SampleClass.java"));
-  }
-
-  @Test
-  public void clover2FileNameDoesNotContainPath() {
-    assertEquals("SampleClass", reportParser.extractClassName("SampleClass.java"));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "4=1;5=1;6=2;8=1;9=1")));
   }
 
   @Test
@@ -141,6 +106,42 @@ public class XmlReportParserTest {
     verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.COVERAGE), anyDouble());
     verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.LINE_COVERAGE), anyDouble());
     verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.BRANCH_COVERAGE), anyDouble());
+  }
+
+
+  private class SonarFileMatcher extends BaseMatcher<org.sonar.api.resources.File> {
+
+    private String filename;
+    private String invokedFileName;
+
+    private SonarFileMatcher(String filename) {
+      this.filename = filename;
+    }
+
+    @Override
+    public boolean matches(Object o) {
+      if (o instanceof org.sonar.api.resources.File) {
+        org.sonar.api.resources.File file = (org.sonar.api.resources.File) o;
+        invokedFileName = extractFileName(file.getName());
+        return filename.equals(invokedFileName);
+      }
+      return false;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+      description.appendText(invokedFileName).appendText(" instead of ").appendText(filename);
+    }
+
+    private String extractFileName(String filename) {
+      if (filename != null) {
+        filename = StringUtils.replaceChars(filename, '\\', '/');
+        if (filename.indexOf('/') >= 0) {
+          filename = StringUtils.substringAfterLast(filename, "/");
+        }
+      }
+      return filename;
+    }
   }
 
 }
