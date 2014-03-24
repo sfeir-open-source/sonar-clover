@@ -60,20 +60,23 @@ public class CloverXmlReportParser {
     try {
       if (reportExists(xmlFile)) {
         LOG.info("Parsing " + xmlFile.getCanonicalPath());
-        StaxParser parser = new StaxParser(new StaxParser.XmlStreamHandler() {
-          public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
-            try {
-              collectProjectMeasures(rootCursor.advance());
-            } catch (ParseException e) {
-              throw new XMLStreamException(e);
-            }
-          }
-        });
-        parser.parse(xmlFile);
+        createStaxParser().parse(xmlFile);
       }
     } catch (Exception e) {
       throw new XmlParserException(e);
     }
+  }
+
+  private StaxParser createStaxParser() {
+    return new StaxParser(new StaxParser.XmlStreamHandler() {
+      public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
+        try {
+          collectProjectMeasures(rootCursor.advance());
+        } catch (ParseException e) {
+          throw new XMLStreamException(e);
+        }
+      }
+    });
   }
 
   private void collectProjectMeasures(SMInputCursor rootCursor) throws ParseException, XMLStreamException {
@@ -117,7 +120,7 @@ public class CloverXmlReportParser {
 
     while (lineCursor.getNext() != null) {
       // skip class elements on format 2_3_2
-      if ("class".equals(lineCursor.getLocalName())) {
+      if (isClass(lineCursor)) {
         continue;
       }
       final int lineId = Integer.parseInt(lineCursor.getAttrValue("num"));
@@ -144,9 +147,13 @@ public class CloverXmlReportParser {
   }
 
   private boolean canBeIncludedInFileMetrics(SMInputCursor metricsCursor) throws ParseException, XMLStreamException {
-    while (metricsCursor.getNext() != null && "class".equals(metricsCursor.getLocalName())) {
+    while (metricsCursor.getNext() != null && isClass(metricsCursor)) {
       // skip class elements on 1.x xml format
     }
     return ParsingUtils.parseNumber(metricsCursor.getAttrValue("elements")) > 0;
+  }
+
+  private boolean isClass(SMInputCursor cursor) throws XMLStreamException {
+    return "class".equals(cursor.getLocalName());
   }
 }
