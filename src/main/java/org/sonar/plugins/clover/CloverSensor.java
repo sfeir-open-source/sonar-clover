@@ -33,22 +33,16 @@ import java.io.File;
 
 public class CloverSensor implements Sensor, CoverageExtension {
   public static final String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
-  public static final String PLUGIN_KEY = "clover";
-  private final FileSystem fs;
   private final CloverXmlReportParserFactory factory;
   private Settings settings;
 
-  public CloverSensor(Settings settings, FileSystem fs, CloverXmlReportParserFactory factory) {
+  public CloverSensor(Settings settings, CloverXmlReportParserFactory factory) {
     this.settings = settings;
-    this.fs = fs;
     this.factory = factory;
   }
 
   public boolean shouldExecuteOnProject(Project project) {
-    if (project.getAnalysisType().isDynamic(true) && fs.hasFiles(fs.predicates().hasLanguage("java"))) {
-      return PLUGIN_KEY.equals(settings.getString("sonar.java.coveragePlugin"));
-    }
-    return false;
+    return StringUtils.isNotEmpty(settings.getString(REPORT_PATH_PROPERTY));
   }
 
   public void analyse(Project project, SensorContext context) {

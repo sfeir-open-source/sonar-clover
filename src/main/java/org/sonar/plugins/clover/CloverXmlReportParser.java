@@ -108,7 +108,11 @@ public class CloverXmlReportParser {
           // cursor should be on the metrics element
           if (canBeIncludedInFileMetrics(fileChildrenCursor)) {
             // cursor should be now on the line cursor
-            saveHitsData(fileProvider.fromIOFile(absoluteFilePath), fileChildrenCursor);
+            org.sonar.api.resources.File resource = fileProvider.fromIOFile(absoluteFilePath);
+            if (resource == null) {
+              LOG.warn("Resource " + absoluteFilePath+ " was not found, information about that resource will still be computed at project level");
+            }
+            saveHitsData(resource, fileChildrenCursor);
           }
         }
       }

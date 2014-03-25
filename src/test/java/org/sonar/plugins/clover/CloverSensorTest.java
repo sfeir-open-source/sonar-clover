@@ -22,8 +22,6 @@ package org.sonar.plugins.clover;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.ProjectFileSystem;
@@ -40,7 +38,6 @@ import static org.mockito.Mockito.when;
 public class CloverSensorTest {
   private Settings settings;
   private CloverSensor sensor;
-  private DefaultFileSystem fs;
   private Project project;
   private SensorContext context;
   private CloverXmlReportParserFactory factory;
@@ -49,45 +46,26 @@ public class CloverSensorTest {
   @Before
   public void setUp() throws Exception {
     settings = new Settings();
-    fs = new DefaultFileSystem();
     factory = mock(CloverXmlReportParserFactory.class);
     parser = mock(CloverXmlReportParser.class);
     when(factory.create(any(Project.class), any(SensorContext.class))).thenReturn(parser);
-    sensor = new CloverSensor(settings, fs, factory);
+    sensor = new CloverSensor(settings, factory);
     context = mock(SensorContext.class);
     project = mock(Project.class);
   }
 
   @Test
-  public void should_not_execute_on_static_analysis() throws Exception {
-    settings.setProperty("sonar.java.coveragePlugin", CloverSensor.PLUGIN_KEY);
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.STATIC);
-    fs.add(new DefaultInputFile("MyClass.java").setLanguage("java"));
+  public void should_not_execute_if_report_path_empty() throws Exception {
+    settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, "");
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
   @Test
-  public void should_not_execute_if_no_java_file() throws Exception {
-    settings.setProperty("sonar.java.coveragePlugin", CloverSensor.PLUGIN_KEY);
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-  }
-
-  @Test
-  public void should_not_execute_if_coverage_not_plugin_key() throws Exception {
-    settings.setProperty("sonar.java.coveragePlugin", "cobertura");
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
-    fs.add(new DefaultInputFile("MyClass.java").setLanguage("java"));
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-  }
-
-  @Test
-  public void should_execute_if_clover_dynamic_analysis_and_java_files() throws Exception {
-    settings.setProperty("sonar.java.coveragePlugin", CloverSensor.PLUGIN_KEY);
-    when(project.getAnalysisType()).thenReturn(Project.AnalysisType.DYNAMIC);
-    fs.add(new DefaultInputFile("MyClass.java").setLanguage("java"));
+  public void should_execute_if_report_path_set() throws Exception {
+    settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, "clover/clover.xml");
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
+
 
   @Test
   public void should_not_interact_if_no_report_path() throws Exception {
