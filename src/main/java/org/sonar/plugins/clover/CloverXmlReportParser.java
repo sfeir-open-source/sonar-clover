@@ -35,7 +35,6 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.api.utils.XmlParserException;
-import sun.rmi.runtime.Log;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -90,6 +89,7 @@ public class CloverXmlReportParser {
       }
     });
   }
+
   private int getMatchedPercentage() {
     if (files == 0) {
       return 0;
@@ -139,7 +139,7 @@ public class CloverXmlReportParser {
     if (resource == null) {
       unmatchedFile++;
       LOG.warn("Resource " + absoluteFilePath + " was not found, information about that resource will still be computed at project level");
-      unmatchedFiles+=absoluteFilePath+", ";
+      unmatchedFiles += absoluteFilePath + ", ";
     }
     return resource;
   }
