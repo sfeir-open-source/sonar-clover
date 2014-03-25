@@ -49,7 +49,7 @@ public class CloverSensor implements Sensor, CoverageExtension {
     if (reportExists(report)) {
       factory.create(project, context).collect(report);
     } else {
-      LoggerFactory.getLogger(getClass()).info("Clover XML report not found");
+      LoggerFactory.getLogger(getClass()).warn("Clover XML report not found");
     }
   }
 

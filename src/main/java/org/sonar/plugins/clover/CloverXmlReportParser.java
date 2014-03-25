@@ -35,6 +35,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.api.utils.XmlParserException;
+import sun.rmi.runtime.Log;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -45,6 +46,9 @@ public class CloverXmlReportParser {
   private static final Logger LOG = LoggerFactory.getLogger(CloverXmlReportParser.class);
   private final FileProvider fileProvider;
   private SensorContext context;
+  private int files;
+  private int unmatchedFile;
+  private String unmatchedFiles;
   final CoverageMeasuresBuilder fileMeasuresBuilder = CoverageMeasuresBuilder.create();
 
   CloverXmlReportParser(FileProvider fileProvider, SensorContext context) {
@@ -59,10 +63,18 @@ public class CloverXmlReportParser {
   protected void collect(File xmlFile) {
     try {
       if (reportExists(xmlFile)) {
+        files = 0;
+        unmatchedFile = 0;
+        unmatchedFiles = "";
         LOG.info("Parsing " + xmlFile.getCanonicalPath());
         createStaxParser().parse(xmlFile);
+        LOG.info("Matched files in report : {}%", getMatchedPercentage());
+        if (!unmatchedFiles.isEmpty()) {
+          LOG.warn("{} files in clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
+        }
       }
     } catch (Exception e) {
+      LOG.error("An error occured while parsing clover xml report : ", e);
       throw new XmlParserException(e);
     }
   }
@@ -77,6 +89,12 @@ public class CloverXmlReportParser {
         }
       }
     });
+  }
+  private int getMatchedPercentage() {
+    if (files == 0) {
+      return 0;
+    }
+    return (files - unmatchedFile) * 100 / files;
   }
 
   private void collectProjectMeasures(SMInputCursor rootCursor) throws ParseException, XMLStreamException {
@@ -116,9 +134,12 @@ public class CloverXmlReportParser {
   }
 
   private org.sonar.api.resources.File getResource(String absoluteFilePath) {
+    files++;
     org.sonar.api.resources.File resource = fileProvider.fromIOFile(absoluteFilePath);
     if (resource == null) {
+      unmatchedFile++;
       LOG.warn("Resource " + absoluteFilePath + " was not found, information about that resource will still be computed at project level");
+      unmatchedFiles+=absoluteFilePath+", ";
     }
     return resource;
   }
