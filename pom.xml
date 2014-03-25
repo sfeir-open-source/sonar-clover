@@ -30,9 +30,10 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/trunk/clover</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/trunk/clover</developerConnection>
-    <url>http://svn.sonar-plugins.codehaus.org</url>
+    <connection>scm:git:git@github.com:SonarCommunity/sonar-clover.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-clover.git</developerConnection>
+    <url>https://github.com/SonarCommunity/sonar-clover</url>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>JIRA</system>
