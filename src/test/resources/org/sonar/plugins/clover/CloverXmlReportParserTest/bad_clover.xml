@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1253282369681" clover="2.6.0">
+  <testproject timestamp="1253282365324" name="Sonar tests - reference 1.0-SNAPSHOT">
+    <metrics coveredelements="16" packages="1" coveredconditionals="0" ncloc="33" statements="11" loc="61"
+             complexity="5" files="2" conditionals="0" coveredstatements="11" coveredmethods="5" methods="5" classes="2"
+             elements="16"/>
+    <package name="org.sonar.samples">
+      <metrics coveredelements="16" coveredconditionals="0" ncloc="33" statements="11" loc="61" complexity="5" files="2"
+               conditionals="0" coveredstatements="11" coveredmethods="5" methods="5" classes="2" elements="16"/>
+      <file
+          path="/Users/simon/projects/sonar/trunk/tests/integration/reference-projects/reference/src/test/java/org/sonar/samples/ClassUnderTestTest.java"
+          name="ClassUnderTestTest.java">
+        <metrics coveredelements="6" coveredconditionals="0" conditionals="0" ncloc="12" statements="4"
+                 coveredmethods="2" coveredstatements="4" loc="16" methods="2" classes="1" complexity="2" elements="6"/>
+        <class name="ClassUnderTestTest">
+          <metrics coveredelements="6" coveredconditionals="0" conditionals="0" statements="4" coveredmethods="2"
+                   coveredstatements="4" methods="2" complexity="2" elements="6"/>
+        </class>
+        <line num="7" signature="testHello() : void" type="method" complexity="1" count="1"/>
+        <line num="8" type="stmt" count="1"/>
+        <line num="9" type="stmt" count="1"/>
+        <line num="12" signature="testToto() : void" type="method" complexity="1" count="1"/>
+        <line num="13" type="stmt" count="1"/>
+        <line num="14" type="stmt" count="1"/>
+      </file>
+      <file
+          path="/Users/simon/projects/sonar/trunk/tests/integration/reference-projects/reference/src/test/java/org/sonar/samples/InnerClassTest.java"
+          name="InnerClassTest.java">
+        <metrics coveredelements="10" coveredconditionals="0" conditionals="0" ncloc="21" statements="7"
+                 coveredmethods="3" coveredstatements="7" loc="45" methods="3" classes="1" complexity="3"
+                 elements="10"/>
+        <class name="InnerClassTest">
+          <metrics coveredelements="10" coveredconditionals="0" conditionals="0" statements="7" coveredmethods="3"
+                   coveredstatements="7" methods="3" complexity="3" elements="10"/>
+        </class>
+        <line num="27" signature="shouldTestMethodToTest() : void" type="method" complexity="1" count="1"/>
+        <line num="29" type="stmt" count="1"/>
+        <line num="30" type="stmt" count="1"/>
+        <line num="33" signature="shouldTestInnerClassInside() : void" type="method" complexity="1" count="1"/>
+        <line num="35" type="stmt" count="1"/>
+        <line num="36" type="stmt" count="1"/>
+        <line num="37" type="stmt" count="1"/>
+        <line num="40" signature="shouldTestPrivateClass() : void" type="method" complexity="1" count="1"/>
+        <line num="42" type="stmt" count="1"/>
+        <line num="43" type="stmt" count="1"/>
+      </file>
+    </package>
+  </testproject>
+</coverage>

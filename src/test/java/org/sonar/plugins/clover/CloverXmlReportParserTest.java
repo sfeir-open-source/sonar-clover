@@ -31,6 +31,7 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.api.utils.XmlParserException;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -108,6 +109,10 @@ public class CloverXmlReportParserTest {
     verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.BRANCH_COVERAGE), anyDouble());
   }
 
+  @Test(expected = XmlParserException.class)
+  public void bad_clover_should_throw_exception() throws Exception {
+    reportParser.collect(TestUtils.getResource(getClass(), "bad_clover.xml"));
+  }
 
   private class SonarFileMatcher extends BaseMatcher<org.sonar.api.resources.File> {
 

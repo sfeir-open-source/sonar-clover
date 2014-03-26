@@ -67,11 +67,14 @@ public class CloverXmlReportParser {
         unmatchedFiles = "";
         LOG.info("Parsing " + xmlFile.getCanonicalPath());
         createStaxParser().parse(xmlFile);
-        LOG.info("Matched files in report : {}%", getMatchedPercentage());
+        LOG.info("Matched files in report : {}", getMatchedPercentage());
         if (!unmatchedFiles.isEmpty()) {
           LOG.warn("{} files in clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
         }
       }
+    } catch (IllegalStateException e) {
+      LOG.error("Format of clover report file is unexpected ", e);
+      throw new XmlParserException(e);
     } catch (Exception e) {
       LOG.error("An error occured while parsing clover xml report : ", e);
       throw new XmlParserException(e);
@@ -90,11 +93,11 @@ public class CloverXmlReportParser {
     });
   }
 
-  private int getMatchedPercentage() {
+  private String getMatchedPercentage() {
     if (files == 0) {
-      return 0;
+      return "No files found in <project> section of report";
     }
-    return (files - unmatchedFile) * 100 / files;
+    return (files - unmatchedFile) * 100 / files+"%";
   }
 
   private void collectProjectMeasures(SMInputCursor rootCursor) throws ParseException, XMLStreamException {
