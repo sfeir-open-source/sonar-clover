@@ -138,7 +138,7 @@ public class CloverXmlReportParser {
     org.sonar.api.resources.File resource = fileProvider.fromIOFile(absoluteFilePath);
     if (resource == null) {
       unmatchedFile++;
-      LOG.warn("Resource " + absoluteFilePath + " was not found, information about that resource will still be computed at project level");
+      LOG.warn("Resource " + absoluteFilePath + " was not found.");
       unmatchedFiles += absoluteFilePath + ", ";
     }
     return resource;
@@ -170,8 +170,10 @@ public class CloverXmlReportParser {
         fileMeasuresBuilder.setConditions(lineId, 2, coveredConditions);
       }
     }
-    for (Measure measure : fileMeasuresBuilder.createMeasures()) {
-      context.saveMeasure(resource, measure);
+    if (resource != null) {
+      for (Measure measure : fileMeasuresBuilder.createMeasures()) {
+        context.saveMeasure(resource, measure);
+      }
     }
   }
 
