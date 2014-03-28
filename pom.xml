@@ -45,7 +45,7 @@
   </ciManagement>
 
   <properties>
-    <sonar.version>4.2-RC4</sonar.version>
+    <sonar.version>4.2</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
   </properties>
