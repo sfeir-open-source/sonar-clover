@@ -40,10 +40,12 @@ public class CloverSensor implements Sensor, CoverageExtension {
     this.factory = factory;
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
     return StringUtils.isNotEmpty(settings.getString(REPORT_PATH_PROPERTY));
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
     File report = getReportFromProperty(project);
     if (reportExists(report)) {

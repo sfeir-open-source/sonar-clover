@@ -35,6 +35,7 @@ import java.util.List;
         project = true, global = true)})
 public final class CloverPlugin extends SonarPlugin {
 
+  @Override
   public List getExtensions() {
     return Arrays.asList(CloverSensor.class, CloverXmlReportParserFactory.class);
   }
