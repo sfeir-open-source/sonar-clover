@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1298993830273" clover="3.0.2">
+   <project timestamp="1298993825853" name="Sonar tests - clover reuse report 1.0-SNAPSHOT">
+      <metrics conditionals="2" methods="2" classes="1" files="1" packages="1" coveredstatements="1" complexity="3" loc="13" ncloc="9" coveredmethods="1" coveredconditionals="1" statements="2" coveredelements="3" elements="6"/>
+      <package name="hello">
+         <metrics conditionals="2" methods="2" classes="1" files="1" coveredstatements="1" complexity="3" loc="13" ncloc="9" coveredmethods="1" coveredconditionals="1" statements="2" coveredelements="3" elements="6"/>
+        <!-- Path is relative for IT : clover generates absolute path -->
+         <file name="HelloWorld.java" path="src/main/java/HelloWorld.java">
+            <metrics classes="1" methods="2" conditionals="2" ncloc="9" coveredstatements="1" coveredmethods="1" complexity="3" coveredconditionals="1" statements="2" loc="13" coveredelements="3" elements="6"/>
+            <class name="HelloWorld">
+               <metrics methods="2" conditionals="2" coveredstatements="1" coveredmethods="1" complexity="3" coveredconditionals="1" statements="2" coveredelements="3" elements="6"/>
+            </class>
+            <line num="5" count="0" complexity="1" type="method" signature="neverCalled() : void"/>
+            <line num="6" count="0" type="stmt"/>
+            <line num="9" count="1" complexity="2" type="method" signature="isPositive(int) : boolean"/>
+            <line num="10" count="1" type="stmt"/>
+            <line num="10" falsecount="1" type="cond" truecount="0"/>
+         </file>
+      </package>
+   </project>
+   <testproject timestamp="1298993825853" name="Sonar tests - clover reuse report 1.0-SNAPSHOT">
+      <metrics conditionals="0" methods="2" classes="1" files="1" packages="1" coveredstatements="1" complexity="2" loc="13" ncloc="9" coveredmethods="1" coveredconditionals="0" statements="2" coveredelements="2" elements="4"/>
+      <package name="hello">
+         <metrics conditionals="0" methods="2" classes="1" files="1" coveredstatements="1" complexity="2" loc="13" ncloc="9" coveredmethods="1" coveredconditionals="0" statements="2" coveredelements="2" elements="4"/>
+        <!-- Path is relative for IT : clover generates absolute path -->
+         <file name="HelloWorldTest.java" path="src/main/java/HelloWorldTest.java">
+            <metrics classes="1" methods="2" conditionals="0" ncloc="9" coveredstatements="1" coveredmethods="1" complexity="2" coveredconditionals="0" statements="2" loc="13" coveredelements="2" elements="4"/>
+            <class name="HelloWorldTest">
+               <metrics conditionals="0" methods="2" coveredstatements="1" complexity="2" testpasses="1" testruns="2" coveredmethods="1" coveredconditionals="0" statements="2" testfailures="1" coveredelements="2" elements="4" testduration="0.013"/>
+            </class>
+            <line num="5" testsuccess="true" count="1" complexity="1" type="method" testduration="0.011" signature="testWillIncreaseCoverage() : void"/>
+            <line num="6" count="1" type="stmt"/>
+            <line num="9" testsuccess="false" count="0" complexity="1" type="method" testduration="0.0020" signature="testWillAlwaysFail() : void"/>
+            <line num="10" count="0" type="stmt"/>
+         </file>
+      </package>
+   </testproject>
+</coverage>
