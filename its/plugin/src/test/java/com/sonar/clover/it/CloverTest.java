@@ -35,7 +35,6 @@ public class CloverTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-      .setOrchestratorProperty("javaVersion", "DEV")
       .addPlugin("java")
       .addPlugin("clover")
       .setMainPluginKey("clover")

@@ -19,9 +19,6 @@
   </organization>
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <cloverVersion>DEV</cloverVersion>
-    <sonar.runtimeVersion>DEV</sonar.runtimeVersion>
-    <orchestrator.configUrl>file://${basedir}/orchestrator.properties</orchestrator.configUrl>
   </properties>
 
   <dependencies>
@@ -47,7 +44,7 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>-server -DcloverVersion="${cloverVersion}" -Dsonar.runtimeVersion="${sonar.runtimeVersion}" -Dorchestrator.configUrl="${orchestrator.configUrl}"</argLine>
+            <argLine>-server</argLine>
             <includes>
               <include>com/sonar/clover/it/*Test.java</include>
             </includes>
