@@ -35,7 +35,7 @@ public class CloverTest {
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
     .addPlugin("java")
     .addPlugin("clover")
-    .addPlugin("groovy").setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
+    .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE").addPlugin("groovy")
     .setMainPluginKey("clover")
     .build();
 
