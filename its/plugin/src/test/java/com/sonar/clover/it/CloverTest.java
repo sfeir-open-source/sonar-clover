@@ -37,8 +37,8 @@ public class CloverTest {
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
       .addPlugin("java")
       .addPlugin("clover")
+      .addPlugin("groovy")
       .setMainPluginKey("clover")
-      .addPlugin(FileLocation.of("projects/sonar-groovy-importer/sonar-groovy-importer-1.0.jar"))
       .build();
 
   public static String keyFor(String projectKey, String fileName, String srcDir) {
@@ -46,7 +46,7 @@ public class CloverTest {
   }
 
   @Test
-  public void testReuseReport() {
+  public void reuse_report_project_java() {
     String project = "reuseReport";
     String file = keyFor(project, "HelloWorld.java", ":src/main/java/");
     SonarRunner analysis = SonarRunner.create()
@@ -78,7 +78,7 @@ public class CloverTest {
         .setProjectKey(project)
         .setProjectVersion("1.0")
         .setSourceDirs("src/main/groovy")
-        .setLanguage("groovy")
+        .setLanguage("grvy")
         .setProjectDir(new File("projects/groovy-clover-sample"))
         .setProperty("sonar.clover.reportPath", "clover.xml");
     orchestrator.executeBuild(analysis);
