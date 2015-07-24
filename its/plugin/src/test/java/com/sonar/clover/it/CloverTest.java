@@ -21,13 +21,11 @@ package com.sonar.clover.it;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarRunner;
-import com.sonar.orchestrator.locator.FileLocation;
+import java.io.File;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
-
-import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -35,11 +33,11 @@ public class CloverTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-      .addPlugin("java")
-      .addPlugin("clover")
-      .addPlugin("groovy")
-      .setMainPluginKey("clover")
-      .build();
+    .addPlugin("java")
+    .addPlugin("clover")
+    .addPlugin("groovy").setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
+    .setMainPluginKey("clover")
+    .build();
 
   public static String keyFor(String projectKey, String fileName, String srcDir) {
     return projectKey + srcDir + fileName;
@@ -50,13 +48,13 @@ public class CloverTest {
     String project = "reuseReport";
     String file = keyFor(project, "HelloWorld.java", ":src/main/java/");
     SonarRunner analysis = SonarRunner.create()
-        .setProjectName(project)
-        .setProjectKey(project)
-        .setProjectVersion("1.0")
-        .setSourceDirs("src/main/java")
-        .setProjectDir(new File("projects/reuseReport"))
-        .setProperty("sonar.clover.reportPath", "clover.xml");
-    if(!orchestrator.getConfiguration().getPluginVersion("clover").isGreaterThan("2.9")) {
+      .setProjectName(project)
+      .setProjectKey(project)
+      .setProjectVersion("1.0")
+      .setSourceDirs("src/main/java")
+      .setProjectDir(new File("projects/reuseReport"))
+      .setProperty("sonar.clover.reportPath", "clover.xml");
+    if (!orchestrator.getConfiguration().getPluginVersion("clover").isGreaterThan("2.9")) {
       analysis.setProperty("sonar.java.coveragePlugin", "clover");
     }
     orchestrator.executeBuild(analysis);
@@ -74,13 +72,13 @@ public class CloverTest {
     String groovyFile = keyFor(project, "org/sonar/Example.groovy", ":src/main/groovy/");
 
     SonarRunner analysis = SonarRunner.create()
-        .setProjectName(project)
-        .setProjectKey(project)
-        .setProjectVersion("1.0")
-        .setSourceDirs("src/main/groovy")
-        .setLanguage("grvy")
-        .setProjectDir(new File("projects/groovy-clover-sample"))
-        .setProperty("sonar.clover.reportPath", "clover.xml");
+      .setProjectName(project)
+      .setProjectKey(project)
+      .setProjectVersion("1.0")
+      .setSourceDirs("src/main/groovy")
+      .setLanguage("grvy")
+      .setProjectDir(new File("projects/groovy-clover-sample"))
+      .setProperty("sonar.clover.reportPath", "clover.xml");
     orchestrator.executeBuild(analysis);
     assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(2);
     assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(0);
