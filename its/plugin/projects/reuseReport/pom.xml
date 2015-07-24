@@ -45,7 +45,6 @@
   </dependencies>
 
   <properties>
-    <sonar.profile>empty-profile</sonar.profile>
     <sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.clover.reportPath>clover.xml</sonar.clover.reportPath>
