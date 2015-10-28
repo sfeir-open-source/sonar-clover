@@ -21,11 +21,13 @@ package com.sonar.clover.it;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarRunner;
-import java.io.File;
+import com.sonar.orchestrator.locator.FileLocation;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -34,9 +36,9 @@ public class CloverTest {
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
     .addPlugin("java")
-    .addPlugin("clover")
-    .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE").addPlugin("groovy")
-    .setMainPluginKey("clover")
+    .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
+    .addPlugin("groovy")
+    .addPlugin(FileLocation.of("../../target/sonar-clover-plugin.jar"))
     .build();
 
   public static String keyFor(String projectKey, String fileName, String srcDir) {
