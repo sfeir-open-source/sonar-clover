@@ -36,6 +36,7 @@ import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.api.utils.XmlParserException;
 
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.text.ParseException;
@@ -55,7 +56,7 @@ public class CloverXmlReportParser {
     this.fileProvider = fileProvider;
   }
 
-  private boolean reportExists(File report) {
+  private static boolean reportExists(@Nullable File report) {
     return report != null && report.exists() && report.isFile();
   }
 
@@ -83,6 +84,7 @@ public class CloverXmlReportParser {
 
   private StaxParser createStaxParser() {
     return new StaxParser(new StaxParser.XmlStreamHandler() {
+      @Override
       public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
         try {
           collectProjectMeasures(rootCursor.advance());
@@ -180,14 +182,14 @@ public class CloverXmlReportParser {
     }
   }
 
-  private boolean canBeIncludedInFileMetrics(SMInputCursor metricsCursor) throws ParseException, XMLStreamException {
+  private static boolean canBeIncludedInFileMetrics(SMInputCursor metricsCursor) throws ParseException, XMLStreamException {
     while (metricsCursor.getNext() != null && isClass(metricsCursor)) {
       // skip class elements on 1.x xml format
     }
     return ParsingUtils.parseNumber(metricsCursor.getAttrValue("elements")) > 0;
   }
 
-  private boolean isClass(SMInputCursor cursor) throws XMLStreamException {
+  private static boolean isClass(SMInputCursor cursor) throws XMLStreamException {
     return "class".equals(cursor.getLocalName());
   }
 }

@@ -28,6 +28,7 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 public class CloverSensor implements Sensor, CoverageExtension {
@@ -63,7 +64,7 @@ public class CloverSensor implements Sensor, CoverageExtension {
     return null;
   }
 
-  private boolean reportExists(File report) {
+  private static boolean reportExists(@Nullable File report) {
     return report != null && report.exists() && report.isFile();
   }
 
