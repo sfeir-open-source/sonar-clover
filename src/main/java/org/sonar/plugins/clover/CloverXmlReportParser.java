@@ -29,9 +29,9 @@ import org.codehaus.staxmate.in.SimpleFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoverageMeasuresBuilder;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.api.utils.XmlParserException;
@@ -44,16 +44,16 @@ import java.text.ParseException;
 public class CloverXmlReportParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(CloverXmlReportParser.class);
-  private final FileProvider fileProvider;
   private SensorContext context;
+  private final InputFileProvider inputFileProvider;
   private int files;
   private int unmatchedFile;
   private String unmatchedFiles;
   final CoverageMeasuresBuilder fileMeasuresBuilder = CoverageMeasuresBuilder.create();
 
-  CloverXmlReportParser(FileProvider fileProvider, SensorContext context) {
+  CloverXmlReportParser(SensorContext context, InputFileProvider inputFileProvider) {
     this.context = context;
-    this.fileProvider = fileProvider;
+    this.inputFileProvider = inputFileProvider;
   }
 
   private static boolean reportExists(@Nullable File report) {
@@ -125,31 +125,31 @@ public class CloverXmlReportParser {
     fileCursor.setFilter(SMFilterFactory.getElementOnlyFilter("file"));
     while (fileCursor.getNext() != null) {
       if (fileCursor.asEvent().isStartElement()) {
-        String absoluteFilePath = fileCursor.getAttrValue("path");
-        if (absoluteFilePath != null) {
+        String path = fileCursor.getAttrValue("path");
+        if (path != null) {
           SMInputCursor fileChildrenCursor = fileCursor.childCursor(new SimpleFilter(SMEvent.START_ELEMENT));
           // cursor should be on the metrics element
           if (canBeIncludedInFileMetrics(fileChildrenCursor)) {
             // cursor should be now on the line cursor
-            saveHitsData(getResource(absoluteFilePath), fileChildrenCursor);
+            saveHitsData(getInputFile(path), fileChildrenCursor);
           }
         }
       }
     }
   }
 
-  private org.sonar.api.resources.File getResource(String absoluteFilePath) {
+  private InputFile getInputFile(String path) {
     files++;
-    org.sonar.api.resources.File resource = fileProvider.fromIOFile(absoluteFilePath);
+    InputFile resource = inputFileProvider.fromPath(path);
     if (resource == null) {
       unmatchedFile++;
-      LOG.warn("Resource " + absoluteFilePath + " was not found.");
-      unmatchedFiles += absoluteFilePath + ", ";
+      LOG.warn("Resource " + path + " was not found.");
+      unmatchedFiles += path + ", ";
     }
     return resource;
   }
 
-  private void saveHitsData(Resource resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
+  private void saveHitsData(InputFile resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
     fileMeasuresBuilder.reset();
 
     while (lineCursor.getNext() != null) {

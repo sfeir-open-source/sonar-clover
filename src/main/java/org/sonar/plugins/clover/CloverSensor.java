@@ -25,20 +25,25 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.PathResolver;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 
 public class CloverSensor implements Sensor, CoverageExtension {
   public static final String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
-  private final CloverXmlReportParserFactory factory;
+  private final FileSystem fs;
+  private final PathResolver pathResolver;
   private Settings settings;
 
-  public CloverSensor(Settings settings, CloverXmlReportParserFactory factory) {
+  public CloverSensor(Settings settings, FileSystem fs, PathResolver pathResolver) {
     this.settings = settings;
-    this.factory = factory;
+    this.fs = fs;
+    this.pathResolver = pathResolver;
   }
 
   @Override
@@ -48,24 +53,24 @@ public class CloverSensor implements Sensor, CoverageExtension {
 
   @Override
   public void analyse(Project project, SensorContext context) {
-    File report = getReportFromProperty(project);
+    File report = getReportFromProperty();
     if (reportExists(report)) {
-      factory.create(project, context).collect(report);
+      new CloverXmlReportParser(context, new InputFileProvider(fs)).collect(report);
     } else {
       LoggerFactory.getLogger(getClass()).warn("Clover XML report not found");
     }
   }
 
-  private File getReportFromProperty(Project project) {
+  private File getReportFromProperty() {
     String path = settings.getString(REPORT_PATH_PROPERTY);
     if (StringUtils.isNotEmpty(path)) {
-      return project.getFileSystem().resolvePath(path);
+      return pathResolver.relativeFile(fs.baseDir(), path);
     }
     return null;
   }
 
   private static boolean reportExists(@Nullable File report) {
-    return report != null && report.exists() && report.isFile();
+    return report != null && report.isFile();
   }
 
 }

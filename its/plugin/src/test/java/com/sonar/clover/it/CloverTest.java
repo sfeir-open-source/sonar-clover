@@ -20,7 +20,7 @@
 package com.sonar.clover.it;
 
 import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.build.SonarRunner;
+import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -39,6 +39,7 @@ public class CloverTest {
     .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
     .addPlugin("groovy")
     .addPlugin(FileLocation.of("../../target/sonar-clover-plugin.jar"))
+    .restoreProfileAtStartup(FileLocation.of("src/test/resources/profile.xml"))
     .build();
 
   public static String keyFor(String projectKey, String fileName, String srcDir) {
@@ -49,7 +50,7 @@ public class CloverTest {
   public void reuse_report_project_java() {
     String project = "reuseReport";
     String file = keyFor(project, "HelloWorld.java", ":src/main/java/");
-    SonarRunner analysis = SonarRunner.create()
+    SonarScanner analysis = SonarScanner.create()
       .setProjectName(project)
       .setProjectKey(project)
       .setProjectVersion("1.0")
@@ -72,8 +73,9 @@ public class CloverTest {
   public void reuse_report_project_groovy() {
     String project = "groovy-clover-sample";
     String groovyFile = keyFor(project, "org/sonar/Example.groovy", ":src/main/groovy/");
-
-    SonarRunner analysis = SonarRunner.create()
+    orchestrator.getServer().provisionProject("groovy-clover-sample", "groovy-clover-sample");
+    orchestrator.getServer().associateProjectToQualityProfile("groovy-clover-sample", "grvy", "rules");
+    SonarScanner analysis = SonarScanner.create()
       .setProjectName(project)
       .setProjectKey(project)
       .setProjectVersion("1.0")

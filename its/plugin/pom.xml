@@ -17,15 +17,12 @@
     <name>SonarSource</name>
     <url>http://www.sonarsource.com</url>
   </organization>
-  <properties>
-    <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-  </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.orchestrator</groupId>
       <artifactId>sonar-orchestrator</artifactId>
-      <version>3.5</version>
+      <version>3.8</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

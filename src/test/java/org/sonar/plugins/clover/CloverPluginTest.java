@@ -27,6 +27,6 @@ public class CloverPluginTest {
 
   @Test
   public void test_getExtensions() {
-    assertThat(new CloverPlugin().getExtensions()).hasSize(2);
+    assertThat(new CloverPlugin().getExtensions()).hasSize(1);
   }
 }

@@ -22,34 +22,30 @@ package org.sonar.plugins.clover;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.scan.filesystem.PathResolver;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 public class CloverSensorTest {
   private Settings settings;
   private CloverSensor sensor;
   private Project project;
   private SensorContext context;
-  private CloverXmlReportParserFactory factory;
-  private CloverXmlReportParser parser;
+  private DefaultFileSystem fs;
 
   @Before
   public void setUp() throws Exception {
     settings = new Settings();
-    factory = mock(CloverXmlReportParserFactory.class);
-    parser = mock(CloverXmlReportParser.class);
-    when(factory.create(any(Project.class), any(SensorContext.class))).thenReturn(parser);
-    sensor = new CloverSensor(settings, factory);
+    fs = new DefaultFileSystem(new File("src/test/resources"));
+    sensor = new CloverSensor(settings, fs, new PathResolver());
     context = mock(SensorContext.class);
     project = mock(Project.class);
   }
@@ -77,13 +73,9 @@ public class CloverSensorTest {
   @Test
   public void should_save_mesures() throws Exception {
     String cloverFilePath = "org/sonar/plugins/clover/CloverXmlReportParserTest/clover.xml";
+    fs.add(new DefaultInputFile(cloverFilePath));
     settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, cloverFilePath);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    File cloverXml = new File(getClass().getResource("/" + cloverFilePath).toURI());
-    when(pfs.resolvePath(cloverFilePath)).thenReturn(cloverXml);
-    when(project.getFileSystem()).thenReturn(pfs);
-
     sensor.analyse(project, context);
-    verify(parser).collect(cloverXml);
+
   }
 }

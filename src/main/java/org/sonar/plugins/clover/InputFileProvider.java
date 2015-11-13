@@ -19,24 +19,24 @@
  */
 package org.sonar.plugins.clover;
 
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.resources.Project;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 
-import java.io.File;
 
-public class FileProvider {
+public class InputFileProvider {
 
-  private final Project project;
-  private final SensorContext context;
+  private final FileSystem fs;
 
-  public FileProvider(Project project, SensorContext context) {
-    this.project = project;
-    this.context = context;
+  public InputFileProvider(FileSystem fs) {
+    this.fs = fs;
   }
 
-  public org.sonar.api.resources.File fromIOFile(String path) {
-    return context.getResource(org.sonar.api.resources.File.fromIOFile(new File(new File(path).getAbsolutePath()), project));
-
+  public InputFile fromPath(String path) {
+    InputFile inputFile = fs.inputFile(fs.predicates().hasAbsolutePath(path));
+    if(inputFile == null) {
+      inputFile = fs.inputFile(fs.predicates().hasRelativePath(path));
+    }
+    return inputFile;
   }
 
 }

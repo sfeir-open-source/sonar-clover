@@ -20,17 +20,20 @@
 
 package org.sonar.plugins.clover;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.measures.CoreMetrics;
+import org.sonar.api.measures.Measure;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.test.IsMeasure;
 import org.sonar.api.utils.XmlParserException;
 import org.sonar.test.TestUtils;
 
@@ -42,33 +45,31 @@ import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class CloverXmlReportParserTest {
 
   private CloverXmlReportParser reportParser;
   private SensorContext context;
   private File xmlFile;
+  private InputFileProvider provider;
 
   @Before
   public void before() throws URISyntaxException {
     xmlFile = TestUtils.getResource(getClass(), "clover.xml");
     context = mock(SensorContext.class);
-    FileProvider fp = mock(FileProvider.class);
     //Return a sonar resource file with the name corresponding to invocation
-    when(fp.fromIOFile(anyString())).then(new Answer<org.sonar.api.resources.File>() {
+    provider = new InputFileProvider(null) {
       @Override
-      public org.sonar.api.resources.File answer(InvocationOnMock invocationOnMock) throws Throwable {
-        org.sonar.api.resources.File sonarFile = mock(org.sonar.api.resources.File.class);
-        when(sonarFile.getName()).thenReturn((String) invocationOnMock.getArguments()[0]);
-        return sonarFile;
+      public InputFile fromPath(String path) {
+        DefaultInputFile inputFile = new DefaultInputFile(path);
+        inputFile.setAbsolutePath(path);
+        return inputFile;
       }
-    });
-    reportParser = new CloverXmlReportParser(fp, context);
+    };
+    reportParser = new CloverXmlReportParser(context, provider);
 
   }
 
@@ -114,7 +115,7 @@ public class CloverXmlReportParserTest {
     reportParser.collect(TestUtils.getResource(getClass(), "bad_clover.xml"));
   }
 
-  private class SonarFileMatcher extends BaseMatcher<org.sonar.api.resources.File> {
+  private class SonarFileMatcher extends BaseMatcher<InputFile> {
 
     private String filename;
     private String invokedFileName;
@@ -125,9 +126,9 @@ public class CloverXmlReportParserTest {
 
     @Override
     public boolean matches(Object o) {
-      if (o instanceof org.sonar.api.resources.File) {
-        org.sonar.api.resources.File file = (org.sonar.api.resources.File) o;
-        invokedFileName = extractFileName(file.getName());
+      if (o instanceof InputFile) {
+        InputFile file = (InputFile) o;
+        invokedFileName = extractFileName(file.absolutePath());
         return filename.equals(invokedFileName);
       }
       return false;
@@ -149,4 +150,40 @@ public class CloverXmlReportParserTest {
     }
   }
 
+  public class IsMeasure extends BaseMatcher<Measure> {
+    private Metric metric = null;
+    private Double value = null;
+    private String data = null;
+    private String mismatchTxt;
+
+    public IsMeasure(Metric metric, Double value) {
+      this.metric = metric;
+      this.value = value;
+    }
+
+    public IsMeasure(Metric metric, String data) {
+      this.metric = metric;
+      this.data = data;
+    }
+
+    public boolean matches(Object o) {
+      Measure m = (Measure) o;
+      if (this.metric != null && !ObjectUtils.equals(this.metric, m.getMetric())) {
+        this.mismatchTxt = "metric: " + this.metric.getKey();
+        return false;
+      } else if (this.value != null && NumberUtils.compare(this.value.doubleValue(), m.getValue().doubleValue()) != 0) {
+        this.mismatchTxt = "value: " + this.value;
+        return false;
+      } else if (this.data != null && !ObjectUtils.equals(this.data, m.getData())) {
+        this.mismatchTxt = "data: " + this.data;
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    public void describeTo(Description description) {
+      description.appendText(this.mismatchTxt);
+    }
+  }
 }

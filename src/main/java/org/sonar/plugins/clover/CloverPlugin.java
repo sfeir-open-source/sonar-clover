@@ -37,6 +37,6 @@ public final class CloverPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
-    return Arrays.asList(CloverSensor.class, CloverXmlReportParserFactory.class);
+    return Arrays.asList(CloverSensor.class);
   }
 }
