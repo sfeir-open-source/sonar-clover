@@ -29,9 +29,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarCommunity/sonar-clover.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-clover.git</developerConnection>
-    <url>https://github.com/SonarCommunity/sonar-clover</url>
+    <connection>scm:git:git@github.com:SonarSource/sonar-clover.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarSource/sonar-clover.git</developerConnection>
+    <url>https://github.com/SonarSource/sonar-clover</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
