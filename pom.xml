@@ -10,7 +10,7 @@
   <groupId>org.sonarsource.clover</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1</version>
 
   <name>Sonar Clover Plugin</name>
   <description>
@@ -33,7 +33,7 @@
     <connection>scm:git:git@github.com:SonarSource/sonar-clover.git</connection>
     <developerConnection>scm:git:git@github.com:SonarSource/sonar-clover.git</developerConnection>
     <url>https://github.com/SonarSource/sonar-clover</url>
-    <tag>HEAD</tag>
+    <tag>3.1</tag>
   </scm>
   <issueManagement>
     <system>JIRA</system>
