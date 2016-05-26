@@ -15,7 +15,6 @@
   <name>Sonar Clover Plugin</name>
   <description>
     <![CDATA[Get code coverage with <a href="http://www.atlassian.com/software/clover/">Atlassian Clover</a>.]]></description>
-  <url>http://redirect.sonarsource.com/plugins/clover.html</url>
   <inceptionYear>2008</inceptionYear>
   <organization>
     <name>SonarSource</name>
@@ -30,19 +29,15 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarSource/sonar-clover.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarSource/sonar-clover.git</developerConnection>
-    <url>https://github.com/SonarSource/sonar-clover</url>
+    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-clover.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-clover.git</developerConnection>
+    <url>https://github.com/SonarQubeCommunity/sonar-clover</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/14643</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/SonarQubeCommunity/sonar-clover/issues</url>
   </issueManagement>
-  <ciManagement>
-    <system>Bamboo</system>
-    <url>http://ci.codehaus.org/browse/SONAR-CLOVER</url>
-  </ciManagement>
 
   <properties>
     <sonar.version>4.5.6</sonar.version>
