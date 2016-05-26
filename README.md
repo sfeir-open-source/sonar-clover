@@ -1,5 +1,6 @@
 Sonar Clover 
-==========
+===========
+[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-clover.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-clover)
 
 ## Description / Features
 It provides the ability to feed SonarQube with code coverage data coming from Atlassian Clover.
