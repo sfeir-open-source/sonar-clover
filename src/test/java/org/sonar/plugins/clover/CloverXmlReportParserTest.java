@@ -87,6 +87,13 @@ public class CloverXmlReportParserTest {
   }
 
   @Test
+  public void parse_karma_clover_Format() throws ParseException, URISyntaxException {
+    reportParser.collect(TestUtils.getResource(getClass(), "karma_clover.xml"));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("test.ts")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 3.0)));
+    verify(context).saveMeasure(argThat(new SonarFileMatcher("test.ts")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 0.0)));
+  }
+
+  @Test
   public void collectFileMeasures() throws Exception {
     reportParser.collect(xmlFile);
     verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 5.0)));
