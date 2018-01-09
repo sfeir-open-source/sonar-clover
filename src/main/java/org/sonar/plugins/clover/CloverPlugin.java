@@ -36,6 +36,8 @@ public final class CloverPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
+	  
+	  //TODO asdf ;lkj
     return Arrays.asList(CloverSensor.class);
   }
 }
