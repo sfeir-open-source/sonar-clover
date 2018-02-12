@@ -17,10 +17,7 @@
     <![CDATA[Get code coverage with <a href="http://www.atlassian.com/software/clover/">Atlassian Clover</a>.]]></description>
   <url>http://redirect.sonarsource.com/plugins/clover.html</url>
   <inceptionYear>2008</inceptionYear>
-  <organization>
-    <name>SonarSource</name>
-    <url>http://www.sonarsource.com</url>
-  </organization>
+
   <licenses>
     <license>
       <name>GNU LGPL 3</name>
