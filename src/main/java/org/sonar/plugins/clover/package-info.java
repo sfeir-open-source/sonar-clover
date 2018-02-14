@@ -1,6 +1,6 @@
 /*
  * Sonar Clover Plugin
- * Copyright (C) 2008 SonarSource
+ * Copyright (C) 2008 ${owner}
  * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
