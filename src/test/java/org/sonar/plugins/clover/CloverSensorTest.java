@@ -71,7 +71,7 @@ public class CloverSensorTest {
   }
 
   @Test
-  public void should_save_mesures() throws Exception {
+  public void should_save_measures() throws Exception {
     String cloverFilePath = "org/sonar/plugins/clover/CloverXmlReportParserTest/clover.xml";
     fs.add(new DefaultInputFile(cloverFilePath));
     settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, cloverFilePath);

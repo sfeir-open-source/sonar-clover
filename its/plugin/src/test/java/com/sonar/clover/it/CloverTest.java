@@ -21,6 +21,7 @@ package com.sonar.clover.it;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarScanner;
+import com.sonar.orchestrator.config.Configuration;
 import com.sonar.orchestrator.locator.FileLocation;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,9 +36,11 @@ public class CloverTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
+    .setOrchestratorProperty("javaVersion", "LATEST_RELEASE")
     .addPlugin("java")
     .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
     .addPlugin("groovy")
+    .setOrchestratorProperty(Configuration.SONAR_VERSION_PROPERTY, "4.5.6")
     .addPlugin(FileLocation.of("../../target/sonar-clover-plugin.jar"))
     .restoreProfileAtStartup(FileLocation.of("src/test/resources/profile.xml"))
     .build();
