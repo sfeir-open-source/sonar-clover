@@ -40,7 +40,7 @@ public class CloverTest {
     .addPlugin("java")
     .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
     .addPlugin("groovy")
-    .setOrchestratorProperty(Configuration.SONAR_VERSION_PROPERTY, "4.5.6")
+    .setOrchestratorProperty(Configuration.SONAR_VERSION_PROPERTY, "6.7.4")
     .addPlugin(FileLocation.of("../../target/sonar-clover-plugin.jar"))
     .restoreProfileAtStartup(FileLocation.of("src/test/resources/profile.xml"))
     .build();

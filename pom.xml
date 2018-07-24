@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>24</version>
+    <version>41</version>
   </parent>
 
   <groupId>org.sonarsource.clover</groupId>
@@ -13,8 +13,7 @@
   <version>3.2-SNAPSHOT</version>
 
   <name>Sonar Clover Plugin</name>
-  <description>
-    <![CDATA[Get code coverage with <a href="http://www.atlassian.com/software/clover/">Atlassian Clover</a>.]]></description>
+  <description><![CDATA[Get code coverage with <a href="http://openclover.org/">OpenClover</a>.]]></description>
   <url>http://redirect.sonarsource.com/plugins/clover.html</url>
   <inceptionYear>2008</inceptionYear>
 
@@ -38,27 +37,16 @@
   </issueManagement>
 
   <properties>
-    <sonar.version>4.5.6</sonar.version>
+    <sonar.version>6.7.4</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
+      <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <version>${sonar.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-
-    <!-- TODO http://jira.codehaus.org/browse/SONAR-2011
-    We need following dependency, otherwise we will receive compilation error
-    -->
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.0.7</version>
       <scope>provided</scope>
     </dependency>
 
@@ -82,7 +70,7 @@
 
     <!-- unit tests -->
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
+      <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-testing-harness</artifactId>
       <version>${sonar.version}</version>
       <scope>test</scope>

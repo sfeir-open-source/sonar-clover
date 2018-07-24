@@ -28,13 +28,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.XmlParserException;
-import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -59,17 +58,15 @@ public class CloverXmlReportParserTest {
   public void before() throws URISyntaxException {
     xmlFile = TestUtils.getResource(getClass(), "clover.xml");
     context = mock(SensorContext.class);
-    //Return a sonar resource file with the name corresponding to invocation
+    // Return a sonar resource file with the name corresponding to invocation
     provider = new InputFileProvider(null) {
       @Override
       public InputFile fromPath(String path) {
-        DefaultInputFile inputFile = new DefaultInputFile(path);
-        inputFile.setAbsolutePath(path);
-        return inputFile;
+        return new TestInputFileBuilder("", path).build();
       }
     };
-    reportParser = new CloverXmlReportParser(context, provider);
 
+    reportParser = new CloverXmlReportParser(context, provider);
   }
 
   @Test

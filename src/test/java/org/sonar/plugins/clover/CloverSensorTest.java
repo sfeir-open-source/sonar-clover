@@ -23,8 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.PathResolver;
 
@@ -43,7 +44,7 @@ public class CloverSensorTest {
 
   @Before
   public void setUp() throws Exception {
-    settings = new Settings();
+    settings = new MapSettings();
     fs = new DefaultFileSystem(new File("src/test/resources"));
     sensor = new CloverSensor(settings, fs, new PathResolver());
     context = mock(SensorContext.class);
@@ -73,9 +74,8 @@ public class CloverSensorTest {
   @Test
   public void should_save_measures() throws Exception {
     String cloverFilePath = "org/sonar/plugins/clover/CloverXmlReportParserTest/clover.xml";
-    fs.add(new DefaultInputFile(cloverFilePath));
+    fs.add(new TestInputFileBuilder("", cloverFilePath).build());
     settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, cloverFilePath);
     sensor.analyse(project, context);
-
   }
 }
