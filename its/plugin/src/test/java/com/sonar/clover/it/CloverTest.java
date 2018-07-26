@@ -23,10 +23,12 @@ import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.config.Configuration;
 import com.sonar.orchestrator.locator.FileLocation;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.services.Resource;
-import org.sonar.wsclient.services.ResourceQuery;
 
 import java.io.File;
 
@@ -95,8 +97,14 @@ public class CloverTest {
   }
 
   private Integer getMeasure(String resourceKey, String metricKey) {
-    Resource resource = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics(resourceKey, metricKey));
-    return resource != null ? resource.getMeasureIntValue(metricKey) : null;
-  }
+    final String body = orchestrator.getServer().newHttpCall("/api/measures/component").setParam("component", resourceKey).setParam("metricKeys", metricKey).execute().getBodyAsString();
 
+    try {
+      final JSONObject componentJson = (JSONObject) ((JSONObject) new JSONParser().parse(body)).get("component");
+      String result = (String) ((JSONObject) ((JSONArray) componentJson.get("measures")).get(0)).get("value");
+      return result == null ? null : Integer.valueOf(result);
+    } catch (ParseException pe) {
+      return null;
+    }
+  }
 }

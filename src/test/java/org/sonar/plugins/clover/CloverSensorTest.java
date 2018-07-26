@@ -19,63 +19,71 @@
  */
 package org.sonar.plugins.clover;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.config.Settings;
+import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.Configuration;
+import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.utils.log.LogTester;
+import org.sonar.api.utils.log.LoggerLevel;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class CloverSensorTest {
-  private Settings settings;
-  private CloverSensor sensor;
-  private Project project;
-  private SensorContext context;
-  private DefaultFileSystem fs;
+  private SensorContextTester context = SensorContextTester.create(new File("src/test/resources/").getAbsoluteFile());
 
-  @Before
-  public void setUp() throws Exception {
-    settings = new MapSettings();
-    fs = new DefaultFileSystem(new File("src/test/resources"));
-    sensor = new CloverSensor(settings, fs, new PathResolver());
-    context = mock(SensorContext.class);
-    project = mock(Project.class);
-  }
+  @Rule
+  public LogTester logTester = new LogTester();
 
   @Test
-  public void should_not_execute_if_report_path_empty() throws Exception {
-    settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, "");
-    assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
-  }
+  public void should_describe() throws Exception {
+    final DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
 
-  @Test
-  public void should_execute_if_report_path_set() throws Exception {
-    settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, "clover/clover.xml");
-    assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+    final CloverSensor sensor = new CloverSensor(new ConfigurationBridge(new MapSettings()), context.fileSystem(), new PathResolver());
+    sensor.describe(descriptor);
+
+    assertThat(descriptor.name()).isNotNull();
+    assertThat(descriptor.languages()).hasSize(2);
   }
 
 
   @Test
   public void should_not_interact_if_no_report_path() throws Exception {
+    final MapSettings settings = new MapSettings();
     settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, "");
-    sensor.analyse(project, context);
-    verifyZeroInteractions(context);
+
+    final Configuration configuration = new ConfigurationBridge(settings);
+    final CloverSensor sensor = new CloverSensor(configuration, context.fileSystem(), new PathResolver());
+
+    sensor.execute(context);
+
+    assertThat(logTester.logs(LoggerLevel.WARN)).contains(
+            CloverSensor.MISSING_FILE_MESSAGE);
   }
 
   @Test
-  public void should_save_measures() throws Exception {
-    String cloverFilePath = "org/sonar/plugins/clover/CloverXmlReportParserTest/clover.xml";
-    fs.add(new TestInputFileBuilder("", cloverFilePath).build());
-    settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, cloverFilePath);
-    sensor.analyse(project, context);
+  public void should_process_file() throws Exception {
+    final String cloverFilePath = "org/sonar/plugins/clover/CloverXmlReportParserTest/clover_2_6_0.xml";
+    final File cloverFile = TestUtils.getResource(cloverFilePath);
+    final MapSettings settings = new MapSettings();
+    settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, cloverFile.getAbsolutePath());
+
+    final DefaultFileSystem fs = context.fileSystem();
+    fs.add(new TestInputFileBuilder("", cloverFile.getAbsolutePath()).build());
+
+    final Configuration configuration = new ConfigurationBridge(settings);
+    final CloverSensor sensor = new CloverSensor(configuration, fs, new PathResolver());
+
+    sensor.execute(context);
+
+    assertThat(logTester.logs(LoggerLevel.INFO)).contains("Parsing " + cloverFile.getCanonicalPath());
+    assertThat(logTester.logs(LoggerLevel.WARN).stream().anyMatch(s -> s.contains("10 files in Clover report did not match any file in SonarQube Index"))).isEqualTo(true);
   }
 }

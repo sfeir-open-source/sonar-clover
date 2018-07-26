@@ -25,30 +25,30 @@ import org.codehaus.staxmate.in.SMFilterFactory;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.codehaus.staxmate.in.SimpleFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.measures.CoverageMeasuresBuilder;
-import org.sonar.api.measures.Measure;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.coverage.NewCoverage;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.api.utils.XmlParserException;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
+import java.io.Serializable;
 import java.text.ParseException;
 
 public class CloverXmlReportParser {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CloverXmlReportParser.class);
+  private static final Logger LOG = Loggers.get(CloverXmlReportParser.class);
   private SensorContext context;
   private final InputFileProvider inputFileProvider;
   private int files;
   private int unmatchedFile;
   private String unmatchedFiles;
-  final CoverageMeasuresBuilder fileMeasuresBuilder = CoverageMeasuresBuilder.create();
 
   CloverXmlReportParser(SensorContext context, InputFileProvider inputFileProvider) {
     this.context = context;
@@ -69,14 +69,14 @@ public class CloverXmlReportParser {
         createStaxParser().parse(xmlFile);
         LOG.info("Matched files in report : {}", getMatchedPercentage());
         if (!unmatchedFiles.isEmpty()) {
-          LOG.warn("{} files in clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
+          LOG.warn("{} files in Clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
         }
       }
     } catch (IllegalStateException e) {
       LOG.error("Format of clover report file is unexpected ", e);
       throw new XmlParserException(e);
     } catch (Exception e) {
-      LOG.error("An error occured while parsing clover xml report : ", e);
+      LOG.error("An error occured while parsing Clover XML report : ", e);
       throw new XmlParserException(e);
     }
   }
@@ -145,39 +145,40 @@ public class CloverXmlReportParser {
       LOG.warn("Resource " + path + " was not found.");
       unmatchedFiles += path + ", ";
     }
+
     return resource;
   }
 
   private void saveHitsData(InputFile resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
-    fileMeasuresBuilder.reset();
-
-    while (lineCursor.getNext() != null) {
-      // skip class elements on format 2_3_2
-      if (isClass(lineCursor)) {
-        continue;
-      }
-      final int lineId = Integer.parseInt(lineCursor.getAttrValue("num"));
-      String count = lineCursor.getAttrValue("count");
-      if (StringUtils.isNotBlank(count)) {
-        fileMeasuresBuilder.setHits(lineId, Integer.parseInt(count));
-
-      } else {
-        int trueCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("truecount"));
-        int falseCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("falsecount"));
-        int coveredConditions = 0;
-        if (trueCount > 0) {
-          coveredConditions++;
-        }
-        if (falseCount > 0) {
-          coveredConditions++;
-        }
-        fileMeasuresBuilder.setConditions(lineId, 2, coveredConditions);
-      }
-    }
     if (resource != null) {
-      for (Measure measure : fileMeasuresBuilder.createMeasures()) {
-        context.saveMeasure(resource, measure);
+      final NewCoverage coverage = context.newCoverage().onFile(resource);
+
+      while (lineCursor.getNext() != null) {
+        // skip class elements on format 2_3_2
+        if (isClass(lineCursor)) {
+          continue;
+        }
+        final int lineId = Integer.parseInt(lineCursor.getAttrValue("num"));
+        String count = lineCursor.getAttrValue("count");
+        if (StringUtils.isNotBlank(count)) {
+          final int hits = Integer.parseInt(count);
+          coverage.lineHits(lineId, hits);
+        } else {
+          int trueCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("truecount"));
+          int falseCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("falsecount"));
+          int coveredConditions = 0;
+          if (trueCount > 0) {
+            coveredConditions++;
+          }
+          if (falseCount > 0) {
+            coveredConditions++;
+          }
+
+          coverage.conditions(lineId, 2, coveredConditions);
+        }
       }
+
+      coverage.save();
     }
   }
 
@@ -185,6 +186,7 @@ public class CloverXmlReportParser {
     while (metricsCursor.getNext() != null && isClass(metricsCursor)) {
       // skip class elements on 1.x xml format
     }
+
     return ParsingUtils.parseNumber(metricsCursor.getAttrValue("elements")) > 0;
   }
 

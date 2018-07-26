@@ -20,56 +20,59 @@
 package org.sonar.plugins.clover;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.CoverageExtension;
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.utils.log.Loggers;
 
 import javax.annotation.Nullable;
 
 import java.io.File;
+import java.util.Optional;
 
-public class CloverSensor implements Sensor, CoverageExtension {
+public class CloverSensor implements Sensor {
+
   public static final String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
+  public final static String MISSING_FILE_MESSAGE = "Clover XML report not found";
   private final FileSystem fs;
   private final PathResolver pathResolver;
-  private Settings settings;
+  private final Configuration configuration;
 
-  public CloverSensor(Settings settings, FileSystem fs, PathResolver pathResolver) {
-    this.settings = settings;
+  public CloverSensor(Configuration configuration, FileSystem fs, PathResolver pathResolver) {
+    this.configuration = configuration;
     this.fs = fs;
     this.pathResolver = pathResolver;
   }
 
-  @Override
-  public boolean shouldExecuteOnProject(Project project) {
-    return StringUtils.isNotEmpty(settings.getString(REPORT_PATH_PROPERTY));
-  }
-
-  @Override
-  public void analyse(Project project, SensorContext context) {
-    File report = getReportFromProperty();
-    if (reportExists(report)) {
-      new CloverXmlReportParser(context, new InputFileProvider(fs)).collect(report);
-    } else {
-      LoggerFactory.getLogger(getClass()).warn("Clover XML report not found");
-    }
-  }
-
   private File getReportFromProperty() {
-    String path = settings.getString(REPORT_PATH_PROPERTY);
-    if (StringUtils.isNotEmpty(path)) {
-      return pathResolver.relativeFile(fs.baseDir(), path);
+    Optional<String> path = configuration.get(REPORT_PATH_PROPERTY);
+    if (path.isPresent() && StringUtils.isNotEmpty(path.get())) {
+      return pathResolver.relativeFile(fs.baseDir(), path.get());
     }
+
     return null;
   }
 
   private static boolean reportExists(@Nullable File report) {
     return report != null && report.isFile();
+  }
+  @Override
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.name("Clover Coverage Analysis");
+    descriptor.onlyOnLanguages("java", "grvy");
+  }
+
+  @Override
+  public void execute(SensorContext context) {
+    final File report = getReportFromProperty();
+    if (reportExists(report)) {
+      new CloverXmlReportParser(context, new InputFileProvider(fs)).collect(report);
+    } else {
+      Loggers.get(getClass()).warn(MISSING_FILE_MESSAGE);
+    }
   }
 
 }

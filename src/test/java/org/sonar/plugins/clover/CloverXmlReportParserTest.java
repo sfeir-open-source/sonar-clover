@@ -19,50 +19,34 @@
  */
 package org.sonar.plugins.clover;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Measure;
-import org.sonar.api.measures.Metric;
-import org.sonar.api.resources.Resource;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.utils.XmlParserException;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 
-import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class CloverXmlReportParserTest {
 
   private CloverXmlReportParser reportParser;
-  private SensorContext context;
-  private File xmlFile;
+  private SensorContextTester context = SensorContextTester.create(new File("src/test/resources/"));
   private InputFileProvider provider;
 
   @Before
-  public void before() throws URISyntaxException {
-    xmlFile = TestUtils.getResource(getClass(), "clover.xml");
-    context = mock(SensorContext.class);
+  public void before() {
     // Return a sonar resource file with the name corresponding to invocation
     provider = new InputFileProvider(null) {
       @Override
       public InputFile fromPath(String path) {
-        return new TestInputFileBuilder("", path).build();
+        return new TestInputFileBuilder("", path).setLines(1_000).build();
       }
     };
 
@@ -70,40 +54,44 @@ public class CloverXmlReportParserTest {
   }
 
   @Test
-  public void parseClover232Format() throws ParseException, URISyntaxException {
+  public void parseClover_2_3_2_Format() {
     reportParser.collect(TestUtils.getResource(getClass(), "clover_2_3_2.xml"));
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("ASTSensor.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 68.0)));
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("ASTSensor.java")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 6.0)));
+
+    final String testFileName = ":/Users/cmunger/dev/workspace/sonar/sonar-squid/src/main/java/org/sonar/squid/sensors/ASTSensor.java";
+    assertThat(context.lineHits(testFileName, 44)).isEqualTo(1);
+    assertThat(context.conditions(testFileName, 157)).isEqualTo(2);
+    assertThat(context.coveredConditions(testFileName, 157)).isEqualTo(2);
   }
 
   @Test
-  public void parse_clover_3_2_2_Format() throws ParseException, URISyntaxException {
+  public void parse_clover_3_2_2_Format() {
     reportParser.collect(TestUtils.getResource(getClass(), "clover_3_2_2.xml"));
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("SampleClass.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 8.0)));
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("SampleClass.java")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 3.0)));
+
+    final String testFileName = ":/home/benzonico/Development/SonarSource/clover-sample/src/main/java/SampleClass.java";
+    assertThat(context.lineHits(testFileName, 6)).isEqualTo(1);
+    assertThat(context.conditions(testFileName, 6)).isEqualTo(2);
+    assertThat(context.coveredConditions(testFileName, 6)).isEqualTo(1);
   }
 
   @Test
-  public void collectFileMeasures() throws Exception {
-    reportParser.collect(xmlFile);
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 5.0)));
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 0.0)));
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "4=1;5=1;6=2;8=1;9=1")));
-  }
+  public void parse_clover_2_6_0_Format() {
+    reportParser.collect(TestUtils.getResource(getClass(), "clover_2_6_0.xml"));
 
-  @Test
-  public void collectFileHitsData() throws Exception {
-    reportParser.collect(xmlFile);
-    verify(context).saveMeasure(argThat(new SonarFileMatcher("ClassUnderTest.java")), argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "4=1;5=1;6=2;8=1;9=1")));
+    final String testFileName = ":/Users/simon/projects/sonar/trunk/tests/integration/reference-projects/reference/src/main/java/org/sonar/samples/ClassUnderTest.java";
+    assertThat(context.lineHits(testFileName, 4)).isEqualTo(1);
+    assertThat(context.conditions(testFileName, 9)).isNull();
+    assertThat(context.coveredConditions(testFileName, 9)).isNull();
   }
 
   @Test
   public void coverageShouldBeZeroWhenNoElements() throws URISyntaxException {
     File xmlFile = TestUtils.getResource(getClass(), "coverageShouldBeZeroWhenNoElements/clover.xml");
     reportParser.collect(xmlFile);
-    verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.COVERAGE), anyDouble());
-    verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.LINE_COVERAGE), anyDouble());
-    verify(context, never()).saveMeasure((Resource) anyObject(), eq(CoreMetrics.BRANCH_COVERAGE), anyDouble());
+
+    final String testFileName = ":/sonar/sonar-commons/src/main/java/ch/hortis/sonar/model/MetricsClassType.java";
+    assertThat(context.lineHits(testFileName, 1)).isNull();
+    assertThat(context.conditions(testFileName, 1)).isNull();
+    assertThat(context.coveredConditions(testFileName, 1)).isNull();
   }
 
   @Test(expected = XmlParserException.class)
@@ -124,7 +112,7 @@ public class CloverXmlReportParserTest {
     public boolean matches(Object o) {
       if (o instanceof InputFile) {
         InputFile file = (InputFile) o;
-        invokedFileName = extractFileName(file.absolutePath());
+        invokedFileName = extractFileName(file.filename());
         return filename.equals(invokedFileName);
       }
       return false;
@@ -143,43 +131,6 @@ public class CloverXmlReportParserTest {
         }
       }
       return filename;
-    }
-  }
-
-  public class IsMeasure extends BaseMatcher<Measure> {
-    private Metric metric = null;
-    private Double value = null;
-    private String data = null;
-    private String mismatchTxt;
-
-    public IsMeasure(Metric metric, Double value) {
-      this.metric = metric;
-      this.value = value;
-    }
-
-    public IsMeasure(Metric metric, String data) {
-      this.metric = metric;
-      this.data = data;
-    }
-
-    public boolean matches(Object o) {
-      Measure m = (Measure) o;
-      if (this.metric != null && !ObjectUtils.equals(this.metric, m.getMetric())) {
-        this.mismatchTxt = "metric: " + this.metric.getKey();
-        return false;
-      } else if (this.value != null && NumberUtils.compare(this.value.doubleValue(), m.getValue().doubleValue()) != 0) {
-        this.mismatchTxt = "value: " + this.value;
-        return false;
-      } else if (this.data != null && !ObjectUtils.equals(this.data, m.getData())) {
-        this.mismatchTxt = "data: " + this.data;
-        return false;
-      } else {
-        return true;
-      }
-    }
-
-    public void describeTo(Description description) {
-      description.appendText(this.mismatchTxt);
     }
   }
 }
