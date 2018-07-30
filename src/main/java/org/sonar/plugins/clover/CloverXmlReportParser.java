@@ -26,6 +26,7 @@ import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.codehaus.staxmate.in.SimpleFilter;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.measures.Metric;
@@ -127,11 +128,7 @@ public class CloverXmlReportParser {
         String path = fileCursor.getAttrValue("path");
         if (path != null) {
           SMInputCursor fileChildrenCursor = fileCursor.childCursor(new SimpleFilter(SMEvent.START_ELEMENT));
-          // cursor should be on the metrics element
-          if (canBeIncludedInFileMetrics(fileChildrenCursor)) {
-            // cursor should be now on the line cursor
-            saveHitsData(getInputFile(path), fileChildrenCursor);
-          }
+          saveHitsData(getInputFile(path), fileChildrenCursor);
         }
       }
     }
@@ -152,6 +149,11 @@ public class CloverXmlReportParser {
   private void saveHitsData(InputFile resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
     if (resource != null) {
       final NewCoverage coverage = context.newCoverage().onFile(resource);
+      // cursor should be on the metrics element
+      if (!canBeIncludedInFileMetrics(lineCursor)) {
+        // cursor should now be on the line cursor; exclude this file if there are no elements to cover
+        ((DefaultInputFile) resource).setExcludedForCoverage(true);
+      }
 
       while (lineCursor.getNext() != null) {
         // skip class elements on format 2_3_2

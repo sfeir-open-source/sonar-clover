@@ -84,6 +84,6 @@ public class CloverSensorTest {
     sensor.execute(context);
 
     assertThat(logTester.logs(LoggerLevel.INFO)).contains("Parsing " + cloverFile.getCanonicalPath());
-    assertThat(logTester.logs(LoggerLevel.WARN).stream().anyMatch(s -> s.contains("10 files in Clover report did not match any file in SonarQube Index"))).isEqualTo(true);
+    assertThat(logTester.logs(LoggerLevel.WARN).stream().anyMatch(s -> s.contains("14 files in Clover report did not match any file in SonarQube Index"))).isEqualTo(true);
   }
 }

@@ -74,6 +74,21 @@ public class CloverXmlReportParserTest {
   }
 
   @Test
+  public void parse_clover_4_1_1_Format() {
+    reportParser.collect(TestUtils.getResource(getClass(), "clover_4_1_1.xml"));
+
+    final String testFileName = ":/clover-examples/parameterized-junit4-example/src/test/java/Square.java";
+    assertThat(context.lineHits(testFileName, 6)).isEqualTo(12);
+    assertThat(context.conditions(testFileName, 6)).isNull();
+    assertThat(context.coveredConditions(testFileName, 6)).isNull();
+
+    final String omittedFileName = ":/clover-examples/parameterized-junit4-example/src/test/java/Omit.java";
+    assertThat(context.lineHits(omittedFileName, 6)).isNull();
+    assertThat(context.conditions(omittedFileName, 6)).isNull();
+    assertThat(context.coveredConditions(omittedFileName, 6)).isNull();
+  }
+
+  @Test
   public void parse_clover_2_6_0_Format() {
     reportParser.collect(TestUtils.getResource(getClass(), "clover_2_6_0.xml"));
 

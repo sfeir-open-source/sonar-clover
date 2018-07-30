@@ -61,13 +61,16 @@ public class CloverTest {
       .setProjectVersion("1.0")
       .setSourceDirs("src/main/java")
       .setProjectDir(new File("projects/reuseReport"))
-      .setProperty("sonar.clover.reportPath", "clover.xml");
+      .setProperty("sonar.clover.reportPath", "clover.xml")
+      .setProperty("sonar.java.binaries", "target/classes");
     if (!orchestrator.getConfiguration().getPluginVersion("clover").isGreaterThan("2.9")) {
       analysis.setProperty("sonar.java.coveragePlugin", "clover");
     }
+
     orchestrator.executeBuild(analysis);
-    assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(4);
-    assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(2);
+
+    assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(8);
+    assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(4);
 
     assertThat(getMeasure(file, "files")).isEqualTo(1);
     assertThat(getMeasure(file, "lines_to_cover")).isEqualTo(4);
@@ -88,9 +91,12 @@ public class CloverTest {
       .setLanguage("grvy")
       .setProjectDir(new File("projects/groovy-clover-sample"))
       .setProperty("sonar.clover.reportPath", "clover.xml");
+
     orchestrator.executeBuild(analysis);
+
     assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(2);
     assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(0);
+
     assertThat(getMeasure(groovyFile, "files")).isEqualTo(1);
     assertThat(getMeasure(groovyFile, "lines_to_cover")).isEqualTo(2);
     assertThat(getMeasure(groovyFile, "uncovered_lines")).isEqualTo(0);
