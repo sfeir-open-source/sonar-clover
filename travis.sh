@@ -24,7 +24,7 @@ plugin)
   fi
 
   cd its/$TEST
-  mvn package -f projects/reuseReport/
+  mvn test-compile -f projects/reuseReport/
   mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -DjavaVersion="LATEST_RELEASE" -Dmaven.test.redirectTestOutputToFile=false
   ;;
 
