@@ -9,7 +9,7 @@ script: ./travis.sh
 env:
   matrix:
   - TEST=ci
-  - TEST=plugin SQ_VERSION=DEV
+#  - TEST=plugin SQ_VERSION=DEV
   - TEST=plugin SQ_VERSION=LATEST_RELEASE
   - TEST=plugin SQ_VERSION=LTS
 
