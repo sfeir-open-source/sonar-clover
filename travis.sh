@@ -4,7 +4,7 @@ set -euo pipefail
 
 function installTravisTools {
   mkdir -p ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v21 | tar zx --strip-components 1 -C ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v50 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
 
@@ -24,6 +24,7 @@ plugin)
   fi
 
   cd its/$TEST
+  mvn package -f projects/reuseReport/
   mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -DjavaVersion="LATEST_RELEASE" -Dmaven.test.redirectTestOutputToFile=false
   ;;
 
