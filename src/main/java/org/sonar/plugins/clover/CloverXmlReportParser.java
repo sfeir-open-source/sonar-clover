@@ -29,17 +29,14 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
-import org.sonar.api.measures.Metric;
+import org.sonar.api.utils.MessageException;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.api.utils.StaxParser;
-import org.sonar.api.utils.XmlParserException;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import javax.annotation.Nullable;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
-import java.io.Serializable;
 import java.text.ParseException;
 
 public class CloverXmlReportParser {
@@ -73,12 +70,12 @@ public class CloverXmlReportParser {
           LOG.warn("{} files in Clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
         }
       }
-    } catch (IllegalStateException e) {
+    } catch (IllegalArgumentException e) {
       LOG.error("Format of clover report file is unexpected ", e);
-      throw new XmlParserException(e);
+      throw e;
     } catch (Exception e) {
       LOG.error("An error occured while parsing Clover XML report : ", e);
-      throw new XmlParserException(e);
+      throw MessageException.of("Clover XML report could not be parsed",e);
     }
   }
 

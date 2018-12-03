@@ -43,7 +43,7 @@ public class CloverSensorTest {
   public LogTester logTester = new LogTester();
 
   @Test
-  public void should_describe() throws Exception {
+  public void should_describe() {
     final DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
 
     final CloverSensor sensor = new CloverSensor(new ConfigurationBridge(new MapSettings()), context.fileSystem(), new PathResolver());
@@ -55,7 +55,7 @@ public class CloverSensorTest {
 
 
   @Test
-  public void should_not_interact_if_no_report_path() throws Exception {
+  public void should_not_interact_if_no_report_path() {
     final MapSettings settings = new MapSettings();
     settings.setProperty(CloverSensor.REPORT_PATH_PROPERTY, "");
 

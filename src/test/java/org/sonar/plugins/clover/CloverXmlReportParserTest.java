@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.utils.XmlParserException;
+import org.sonar.api.utils.MessageException;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -109,7 +109,7 @@ public class CloverXmlReportParserTest {
     assertThat(context.coveredConditions(testFileName, 1)).isNull();
   }
 
-  @Test(expected = XmlParserException.class)
+  @Test(expected = MessageException.class)
   public void bad_clover_should_throw_exception() throws Exception {
     reportParser.collect(TestUtils.getResource(getClass(), "bad_clover.xml"));
   }

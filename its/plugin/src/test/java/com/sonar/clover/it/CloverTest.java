@@ -21,7 +21,6 @@ package com.sonar.clover.it;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarScanner;
-import com.sonar.orchestrator.config.Configuration;
 import com.sonar.orchestrator.locator.FileLocation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -38,6 +37,7 @@ public class CloverTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
+    .setSonarVersion("6.7.5")
     .setOrchestratorProperty("javaVersion", "LATEST_RELEASE")
     .addPlugin("java")
     .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
