@@ -1,16 +1,17 @@
+services: docker
 language: java
-sudo: false
 
-jdk:
-  - oraclejdk8
-  - openjdk8
+jobs:
+  include:
+    - stage: "Test & Quality Checks"
+      install: skip # bundle install is not required
+      include:
+      script: make run-test
+    - script: make quality-analysis
+    - stage: deploy
+      install: skip # bundle install is not required
+      script: make deploy-package
 
-install: true
-script: ./travis.sh
-
-cache:
-  directories:
-    - '$HOME/.m2/repository'
 
 notifications:
   email: false
