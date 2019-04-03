@@ -1,6 +1,6 @@
 Sonar Clover 
 ===========
-[![Build Status](https://api.travis-ci.org/Tony-Proum/sonar-clover.svg)](https://travis-ci.org/Tony-Proum/sonar-clover)
+[![Build Status](https://travis-ci.org/sfeir-open-source/sonar-clover.svg?branch=master)](https://travis-ci.org/sfeir-open-source/sonar-clover)
 
 ## Description / Features
 It provides the ability to feed SonarQube with code coverage data coming from Atlassian Clover.

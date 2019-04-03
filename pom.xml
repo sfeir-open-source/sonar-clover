@@ -4,10 +4,10 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>41</version>
+    <version>48</version>
   </parent>
 
-  <groupId>org.sonarsource.clover</groupId>
+  <groupId>org.cheztone</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
   <version>3.2-SNAPSHOT</version>
@@ -15,7 +15,7 @@
   <name>Sonar Clover Plugin</name>
   <description><![CDATA[Get code coverage with <a href="http://openclover.org/">OpenClover</a>.]]></description>
   <url>http://redirect.sonarsource.com/plugins/clover.html</url>
-  <inceptionYear>2008</inceptionYear>
+  <inceptionYear>2018</inceptionYear>
 
   <licenses>
     <license>
@@ -40,6 +40,9 @@
     <sonar.version>6.7.1</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
+    <license.owner>SonarSource</license.owner>
+    <license.years>2008</license.years>
+    <license.mailto>sonarqube@googlegroups.com</license.mailto>
   </properties>
 
   <dependencies>
