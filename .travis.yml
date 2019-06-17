@@ -7,7 +7,7 @@ jobs:
       install: skip # bundle install is not required
       include:
       script: make run-test
-    - script: 'if [ "$SONAR_HOST_URL" != "false" ]; then bash -c "make quality-analysis"; fi'
+    - script: 'if [ ! -z "$SONAR_HOST_URL" ]; then bash -c "make quality-analysis"; fi'
     - stage: deploy
       install: skip # bundle install is not required
       branches:
