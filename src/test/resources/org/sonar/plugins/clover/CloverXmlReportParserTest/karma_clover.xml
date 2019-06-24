@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1482335568599" clover="3.2.0">
+	<project timestamp="1482335568599"  name="All Files" >
+		<metrics statements="823"  coveredstatements="704"  conditionals="203"  coveredconditionals="122"  methods="231"  coveredmethods="184"  elements="1257"  coveredelements="1010"  complexity="0"  packages="21"  files="35"  classes="35"  loc="1530"  ncloc="1530" />
+		<package name="src" >
+			<metrics statements="3"  coveredstatements="3"  conditionals="0"  coveredconditionals="0"  methods="1"  coveredmethods="1" />
+			<file name="test.ts"  path="/test/app/src/test.ts" >
+				<metrics statements="3"  coveredstatements="3"  conditionals="0"  coveredconditionals="0"  methods="1"  coveredmethods="1" />
+				<line num="1"  count="1"  type="stmt" />
+				<line num="2"  count="1"  type="stmt" />
+				<line num="4"  count="1"  type="stmt" />
+			</file>
+		</package>
+	</project>
+</coverage>

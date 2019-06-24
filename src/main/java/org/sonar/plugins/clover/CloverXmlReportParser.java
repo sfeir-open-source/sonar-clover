@@ -20,11 +20,7 @@
 package org.sonar.plugins.clover;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.staxmate.in.SMEvent;
-import org.codehaus.staxmate.in.SMFilterFactory;
-import org.codehaus.staxmate.in.SMHierarchicCursor;
-import org.codehaus.staxmate.in.SMInputCursor;
-import org.codehaus.staxmate.in.SimpleFilter;
+import org.codehaus.staxmate.in.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
@@ -42,153 +38,174 @@ import java.text.ParseException;
 
 public class CloverXmlReportParser {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CloverXmlReportParser.class);
-  private SensorContext context;
-  private final InputFileProvider inputFileProvider;
-  private int files;
-  private int unmatchedFile;
-  private String unmatchedFiles;
-  final CoverageMeasuresBuilder fileMeasuresBuilder = CoverageMeasuresBuilder.create();
+    private static final Logger LOG = LoggerFactory.getLogger(CloverXmlReportParser.class);
+    private SensorContext context;
+    private final InputFileProvider inputFileProvider;
+    private int files;
+    private int unmatchedFile;
+    private String unmatchedFiles;
+    final CoverageMeasuresBuilder fileMeasuresBuilder = CoverageMeasuresBuilder.create();
 
-  CloverXmlReportParser(SensorContext context, InputFileProvider inputFileProvider) {
-    this.context = context;
-    this.inputFileProvider = inputFileProvider;
-  }
-
-  private static boolean reportExists(@Nullable File report) {
-    return report != null && report.exists() && report.isFile();
-  }
-
-  protected void collect(File xmlFile) {
-    try {
-      if (reportExists(xmlFile)) {
-        files = 0;
-        unmatchedFile = 0;
-        unmatchedFiles = "";
-        LOG.info("Parsing " + xmlFile.getCanonicalPath());
-        createStaxParser().parse(xmlFile);
-        LOG.info("Matched files in report : {}", getMatchedPercentage());
-        if (!unmatchedFiles.isEmpty()) {
-          LOG.warn("{} files in clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
-        }
-      }
-    } catch (IllegalStateException e) {
-      LOG.error("Format of clover report file is unexpected ", e);
-      throw new XmlParserException(e);
-    } catch (Exception e) {
-      LOG.error("An error occured while parsing clover xml report : ", e);
-      throw new XmlParserException(e);
+    CloverXmlReportParser(SensorContext context, InputFileProvider inputFileProvider) {
+        this.context = context;
+        this.inputFileProvider = inputFileProvider;
     }
-  }
 
-  private StaxParser createStaxParser() {
-    return new StaxParser(new StaxParser.XmlStreamHandler() {
-      @Override
-      public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
+    private static boolean reportExists(@Nullable File report) {
+        return report != null && report.exists() && report.isFile();
+    }
+
+    protected void collect(File xmlFile) {
         try {
-          collectProjectMeasures(rootCursor.advance());
-        } catch (ParseException e) {
-          throw new XMLStreamException(e);
+            if (reportExists(xmlFile)) {
+                files = 0;
+                unmatchedFile = 0;
+                unmatchedFiles = "";
+                LOG.info("Parsing " + xmlFile.getCanonicalPath());
+                createStaxParser().parse(xmlFile);
+                LOG.info("Matched files in report : {}", getMatchedPercentage());
+                if (!unmatchedFiles.isEmpty()) {
+                    LOG.warn("{} files in clover report did not match any file in SonarQube Index : {}", unmatchedFile, unmatchedFiles);
+                }
+            }
+        } catch (IllegalStateException e) {
+            LOG.error("Format of clover report file is unexpected ", e);
+            throw new XmlParserException(e);
+        } catch (Exception e) {
+            LOG.error("An error occured while parsing clover xml report : ", e);
+            throw new XmlParserException(e);
         }
-      }
-    });
-  }
-
-  private String getMatchedPercentage() {
-    if (files == 0) {
-      return "No files found in <project> section of report";
     }
-    return (files - unmatchedFile) * 100 / files+"%";
-  }
 
-  private void collectProjectMeasures(SMInputCursor rootCursor) throws ParseException, XMLStreamException {
-    SMInputCursor projectCursor = rootCursor.descendantElementCursor("project");
-    SMInputCursor projectChildrenCursor = projectCursor.advance().childElementCursor();
-    projectChildrenCursor.setFilter(new SimpleFilter(SMEvent.START_ELEMENT));
-    //Skip the metrics tag.
-    projectChildrenCursor.advance();
-    collectPackageMeasures(projectChildrenCursor);
-  }
-
-  private void collectPackageMeasures(SMInputCursor packCursor) throws ParseException, XMLStreamException {
-    while (packCursor.getNext() != null) {
-      SMInputCursor packChildrenCursor = packCursor.descendantElementCursor();
-      packChildrenCursor.setFilter(new SimpleFilter(SMEvent.START_ELEMENT));
-      //Skip the metrics tag.
-      packChildrenCursor.advance();
-      collectFileMeasures(packChildrenCursor);
+    private StaxParser createStaxParser() {
+        return new StaxParser(new StaxParser.XmlStreamHandler() {
+            @Override
+            public void stream(SMHierarchicCursor rootCursor) throws XMLStreamException {
+                try {
+                    collectProjectMeasures(rootCursor.advance());
+                } catch (ParseException e) {
+                    throw new XMLStreamException(e);
+                }
+            }
+        });
     }
-  }
 
-  private void collectFileMeasures(SMInputCursor fileCursor) throws ParseException, XMLStreamException {
-    fileCursor.setFilter(SMFilterFactory.getElementOnlyFilter("file"));
-    while (fileCursor.getNext() != null) {
-      if (fileCursor.asEvent().isStartElement()) {
-        String path = fileCursor.getAttrValue("path");
-        if (path != null) {
-          SMInputCursor fileChildrenCursor = fileCursor.childCursor(new SimpleFilter(SMEvent.START_ELEMENT));
-          // cursor should be on the metrics element
-          if (canBeIncludedInFileMetrics(fileChildrenCursor)) {
-            // cursor should be now on the line cursor
-            saveHitsData(getInputFile(path), fileChildrenCursor);
-          }
+    private String getMatchedPercentage() {
+        if (files == 0) {
+            return "No files found in <project> section of report";
         }
-      }
+        return (files - unmatchedFile) * 100 / files + "%";
     }
-  }
 
-  private InputFile getInputFile(String path) {
-    files++;
-    InputFile resource = inputFileProvider.fromPath(path);
-    if (resource == null) {
-      unmatchedFile++;
-      LOG.warn("Resource " + path + " was not found.");
-      unmatchedFiles += path + ", ";
+    private void collectProjectMeasures(SMInputCursor rootCursor) throws ParseException, XMLStreamException {
+        SMInputCursor projectCursor = rootCursor.descendantElementCursor("project");
+        SMInputCursor projectChildrenCursor = projectCursor.advance().childElementCursor();
+        projectChildrenCursor.setFilter(new SimpleFilter(SMEvent.START_ELEMENT));
+        //Skip the metrics tag.
+        projectChildrenCursor.advance();
+        collectPackageMeasures(projectChildrenCursor);
     }
-    return resource;
-  }
 
-  private void saveHitsData(InputFile resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
-    fileMeasuresBuilder.reset();
-
-    while (lineCursor.getNext() != null) {
-      // skip class elements on format 2_3_2
-      if (isClass(lineCursor)) {
-        continue;
-      }
-      final int lineId = Integer.parseInt(lineCursor.getAttrValue("num"));
-      String count = lineCursor.getAttrValue("count");
-      if (StringUtils.isNotBlank(count)) {
-        fileMeasuresBuilder.setHits(lineId, Integer.parseInt(count));
-
-      } else {
-        int trueCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("truecount"));
-        int falseCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("falsecount"));
-        int coveredConditions = 0;
-        if (trueCount > 0) {
-          coveredConditions++;
+    private void collectPackageMeasures(SMInputCursor packCursor) throws ParseException, XMLStreamException {
+        while (packCursor.getNext() != null) {
+            SMInputCursor packChildrenCursor = packCursor.descendantElementCursor();
+            packChildrenCursor.setFilter(new SimpleFilter(SMEvent.START_ELEMENT));
+            //Skip the metrics tag.
+            packChildrenCursor.advance();
+            collectFileMeasures(packChildrenCursor);
         }
-        if (falseCount > 0) {
-          coveredConditions++;
+    }
+
+    private void collectFileMeasures(SMInputCursor fileCursor) throws ParseException, XMLStreamException {
+        fileCursor.setFilter(SMFilterFactory.getElementOnlyFilter("file"));
+        while (fileCursor.getNext() != null) {
+            if (fileCursor.asEvent().isStartElement()) {
+                String path = getNullSafeAttributeValue(fileCursor, "path");
+                if (path != null) {
+                    SMInputCursor fileChildrenCursor = fileCursor.childCursor(new SimpleFilter(SMEvent.START_ELEMENT));
+                    // cursor should be on the metrics element
+                    if (canBeIncludedInFileMetrics(fileChildrenCursor)) {
+                        // cursor should be now on the line cursor
+                        saveHitsData(getInputFile(path), fileChildrenCursor);
+                    }
+                }
+            }
         }
-        fileMeasuresBuilder.setConditions(lineId, 2, coveredConditions);
-      }
     }
-    if (resource != null) {
-      for (Measure measure : fileMeasuresBuilder.createMeasures()) {
-        context.saveMeasure(resource, measure);
-      }
-    }
-  }
 
-  private static boolean canBeIncludedInFileMetrics(SMInputCursor metricsCursor) throws ParseException, XMLStreamException {
-    while (metricsCursor.getNext() != null && isClass(metricsCursor)) {
-      // skip class elements on 1.x xml format
+    private InputFile getInputFile(String path) {
+        files++;
+        InputFile resource = inputFileProvider.fromPath(path);
+        if (resource == null) {
+            unmatchedFile++;
+            LOG.warn("Resource " + path + " was not found.");
+            unmatchedFiles += path + ", ";
+        }
+        return resource;
     }
-    return ParsingUtils.parseNumber(metricsCursor.getAttrValue("elements")) > 0;
-  }
 
-  private static boolean isClass(SMInputCursor cursor) throws XMLStreamException {
-    return "class".equals(cursor.getLocalName());
-  }
+    private void saveHitsData(InputFile resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
+        fileMeasuresBuilder.reset();
+
+        while (lineCursor.getNext() != null) {
+            // skip class elements on format 2_3_2
+            if (isClass(lineCursor)) {
+                continue;
+            }
+            final int lineId = Integer.parseInt(getNullSafeAttributeValue(lineCursor, "num"));
+            String count = getNullSafeAttributeValue(lineCursor, "count");
+            if (StringUtils.isNotBlank(count)) {
+                fileMeasuresBuilder.setHits(lineId, Integer.parseInt(count));
+
+            } else {
+                int trueCount = (int) ParsingUtils.parseNumber(getNullSafeAttributeValue(lineCursor, "truecount"));
+                int falseCount = (int) ParsingUtils.parseNumber(getNullSafeAttributeValue(lineCursor, "falsecount"));
+                int coveredConditions = 0;
+                if (trueCount > 0) {
+                    coveredConditions++;
+                }
+                if (falseCount > 0) {
+                    coveredConditions++;
+                }
+                fileMeasuresBuilder.setConditions(lineId, 2, coveredConditions);
+            }
+        }
+        if (resource != null) {
+            for (Measure measure : fileMeasuresBuilder.createMeasures()) {
+                context.saveMeasure(resource, measure);
+            }
+        }
+    }
+
+    /**
+     * Helper method to ensure that if an non-existing or empty attribute is queried, we don' get exceptions when parsing it as a number.
+     *
+     * @param lineCursor
+     * @param attributeName
+     * @return
+     * @throws XMLStreamException
+     */
+    private static String getNullSafeAttributeValue(SMInputCursor lineCursor, String attributeName) throws XMLStreamException {
+        String value = lineCursor.getAttrValue(attributeName);
+        if (value == null) {
+            value = "";
+        }
+        return value;
+    }
+
+    private static boolean canBeIncludedInFileMetrics(SMInputCursor metricsCursor) throws ParseException, XMLStreamException {
+        while (metricsCursor.getNext() != null && isClass(metricsCursor)) {
+            // skip class elements on 1.x xml format
+        }
+        String elements = getNullSafeAttributeValue(metricsCursor, "elements");
+        if(StringUtils.isBlank(elements)) {
+            String statements = getNullSafeAttributeValue(metricsCursor, "statements");
+            return StringUtils.isNotBlank(statements) && ParsingUtils.parseNumber(statements) > 0;
+        }
+        return StringUtils.isNotBlank(elements) && ParsingUtils.parseNumber(elements) > 0;
+    }
+
+    private static boolean isClass(SMInputCursor cursor) throws XMLStreamException {
+        return "class".equals(cursor.getLocalName());
+    }
 }
