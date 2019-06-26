@@ -1,6 +1,10 @@
 run-test: ## Allows to run all unit tests
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn test
 
+run-integration-test: ## Allows to run local integrations test with docker
+	@docker build --build-arg VERSION=latest --tag test-sonar . && \
+	docker run -p 9000:9000 test-sonar
+
 build-package: ## Allows to build artifacts
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn package
 
