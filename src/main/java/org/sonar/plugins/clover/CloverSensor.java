@@ -35,13 +35,13 @@ import java.util.Optional;
 
 public class CloverSensor implements Sensor {
 
-  public static final String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
-  public final static String MISSING_FILE_MESSAGE = "Clover XML report not found";
+  static final String REPORT_PATH_PROPERTY = "sonar.clover.reportPath";
+  final static String MISSING_FILE_MESSAGE = "Clover XML report not found";
   private final FileSystem fs;
   private final PathResolver pathResolver;
   private final Configuration configuration;
 
-  public CloverSensor(Configuration configuration, FileSystem fs, PathResolver pathResolver) {
+  CloverSensor(Configuration configuration, FileSystem fs, PathResolver pathResolver) {
     this.configuration = configuration;
     this.fs = fs;
     this.pathResolver = pathResolver;

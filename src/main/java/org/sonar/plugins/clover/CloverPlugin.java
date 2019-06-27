@@ -28,6 +28,7 @@ import java.util.Collections;
 @Properties({
     @Property(
         key = CloverSensor.REPORT_PATH_PROPERTY,
+        defaultValue = "target/site/clover/clover.xml",
         name = "Report path",
         description = "Absolute or relative path to the Clover XML report file.",
         category = "java",
