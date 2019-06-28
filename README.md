@@ -14,3 +14,4 @@ To display code coverage data:
  or sonar.coverageReportPaths (sonarQube v7 or higher, FYI with this version, only the xml format is supported) property to the path to the Clover report. 
 The path may be absolute or relative to the project base directory.
 
+## 

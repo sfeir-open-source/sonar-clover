@@ -21,7 +21,8 @@
             <artifactId>clover-maven-plugin</artifactId>
             <version>4.3.1</version>
             <configuration>
-
+              <generateHtml>false</generateHtml>
+              <generateXml>true</generateXml>
             </configuration>
         </plugin>
       </plugins>

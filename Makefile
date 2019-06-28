@@ -1,9 +1,14 @@
 run-test: ## Allows to run all unit tests
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn test
 
-run-integration-test: ## Allows to run local integrations test with docker
-	@docker build --build-arg VERSION=latest --tag test-sonar . && \
-	docker run -p 9000:9000 test-sonar
+run-integration-platform: ## Allows to run local integrations test with docker
+	@docker network create sonar || \
+	docker build --build-arg VERSION=$$VERSION --tag test-instance . && \
+	docker run -p 9000:9000 --name sonar-instance --net sonar test-instance
+
+run-integration-test: ## Allows to push a report in integration platform
+	@docker run --mount type=bind,src=$$(pwd)/its/integration,target=/usr/src -w /usr/src --net sonar maven:alpine \
+	 mvn clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.host.url=http://sonar-instance:9000
 
 build-package: ## Allows to build artifacts
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn package
