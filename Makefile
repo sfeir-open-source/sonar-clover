@@ -8,7 +8,7 @@ run-integration-platform: ## Allows to run local integrations test with docker
 
 run-integration-test: ## Allows to push a report in integration platform
 	@docker run --mount type=bind,src=$$(pwd)/its/integration,target=/usr/src -w /usr/src --net sonar maven:alpine \
-	 mvn clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.host.url=http://sonar-instance:9000
+	 mvn clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000
 
 build-package: ## Allows to build artifacts
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn package

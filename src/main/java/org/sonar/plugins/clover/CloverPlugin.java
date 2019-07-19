@@ -29,9 +29,8 @@ import java.util.Collections;
     @Property(
         key = CloverSensor.REPORT_PATH_PROPERTY,
         defaultValue = "target/site/clover/clover.xml",
-        name = "Report path",
+        name = "Clover Report path",
         description = "Absolute or relative path to the Clover XML report file.",
-        category = "java",
         project = true)})
 public final class CloverPlugin implements Plugin {
 
