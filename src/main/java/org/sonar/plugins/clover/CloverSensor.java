@@ -41,6 +41,7 @@ public class CloverSensor implements Sensor {
   private final PathResolver pathResolver;
   private final Configuration configuration;
 
+  @SuppressWarnings("WeakerAccess") // brings compatibility with sonarQube v 6.x
   public CloverSensor(Configuration configuration, FileSystem fs, PathResolver pathResolver) {
     this.configuration = configuration;
     this.fs = fs;
