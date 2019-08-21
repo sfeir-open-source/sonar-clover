@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1532965399544" clover="4.1.1">
+    <project name="Parameterized JUnit4 Example 1.0" timestamp="0">
+        <metrics coveredelements="1" complexity="1" loc="8" methods="1" classes="1" statements="1" packages="0"
+                 coveredconditionals="0" coveredmethods="1" elements="2" ncloc="1" files="1" conditionals="0"
+                 coveredstatements="1"/>
+        <package name="default-pkg">
+            <metrics coveredelements="1" coveredconditionals="0" complexity="1" loc="8" coveredmethods="1" methods="1" elements="2" classes="1" ncloc="5" statements="1" conditionals="0"
+                     coveredstatements="1"/>
+            <file path="/clover-examples/parameterized-junit4-example/src/test/java/Square.java" name="Square.java">
+                <metrics coveredelements="1" coveredconditionals="0" complexity="1" loc="8" coveredmethods="1" methods="1" elements="2" classes="1" ncloc="5" statements="1" conditionals="0" coveredstatements="1"/>
+                <class name="Square">
+                    <metrics coveredelements="1" coveredconditionals="0" complexity="1" coveredmethods="1" methods="1" elements="2" statements="1" conditionals="0" coveredstatements="1"/>
+                </class>
+                <line complexity="1" visibility="package" signature="compute(int) : int" num="5" count="0" type="method"/>
+                <line num="6" count="12" type="stmt"/>
+            </file>
+            <file path="/clover-examples/parameterized-junit4-example/src/test/java/Omit.java" name="Square.java">
+                <metrics coveredelements="0" coveredconditionals="0" complexity="12" loc="8" coveredmethods="0" methods="0" elements="0" classes="1" ncloc="5" statements="0" conditionals="0" coveredstatements="0"/>
+                <class name="Omit">
+                    <metrics coveredelements="0" coveredconditionals="0" complexity="12" loc="8" coveredmethods="0" methods="0" elements="0" classes="1" ncloc="5" statements="0" conditionals="0" coveredstatements="0"/>
+                </class>
+            </file>
+        </package>
+    </project>
+    <testproject name="Parameterized JUnit4 Example 1.0" timestamp="0">
+        <metrics coveredelements="0" complexity="6" loc="67" methods="6" classes="4" statements="10" packages="1" coveredconditionals="0" coveredmethods="0" elements="16" ncloc="46" files="4" conditionals="0" coveredstatements="0"/>
+        <package name="default-pkg">
+            <metrics coveredelements="0" complexity="6" loc="67" methods="6" classes="4" statements="10" coveredconditionals="0" coveredmethods="0" elements="16" ncloc="46" files="4" conditionals="0" coveredstatements="0"/>
+            <file path="/clover-examples/parameterized-junit4-example/src/test/java/RunJUnit4WithClover.java" name="RunJUnit4WithClover.java">
+                <metrics coveredelements="0" coveredconditionals="0" complexity="1" loc="14" coveredmethods="0" methods="1" elements="4" classes="1" ncloc="9" statements="3" conditionals="0" coveredstatements="0"/>
+                <class name="RunJUnit4WithClover">
+                    <metrics coveredelements="0" coveredconditionals="0" complexity="1" coveredmethods="0" methods="1" elements="4" statements="3" conditionals="0" coveredstatements="0"/>
+                </class>
+                <line complexity="1" visibility="public" signature="main(String[]) : void" num="9" count="0" type="method"/>
+                <line num="10" count="0" type="stmt"/>
+                <line num="11" count="0" type="stmt"/>
+                <line num="12" count="0" type="stmt"/>
+            </file>
+            <file path="/clover-examples/parameterized-junit4-example/src/test/java/RunJUnit4WithoutClover.java" name="RunJUnit4WithoutClover.java">
+                <metrics coveredelements="0" coveredconditionals="0" complexity="1" loc="12" coveredmethods="0" methods="1" elements="3" classes="1" ncloc="7" statements="2" conditionals="0" coveredstatements="0"/>
+                <class name="RunJUnit4WithoutClover">
+                    <metrics coveredelements="0" coveredconditionals="0" complexity="1" coveredmethods="0" methods="1" elements="3" statements="2" conditionals="0" coveredstatements="0"/>
+                </class>
+                <line complexity="1" visibility="public" signature="main(String[]) : void" num="8" count="0" type="method"/>
+                <line num="9" count="0" type="stmt"/>
+                <line num="10" count="0" type="stmt"/>
+            </file>
+            <file path="/clover-examples/parameterized-junit4-example/src/test/java/SquareTest.java" name="SquareTest.java">
+                <metrics coveredelements="0" coveredconditionals="0" complexity="3" loc="33" coveredmethods="0" methods="3" elements="7" classes="1" ncloc="25" statements="4" conditionals="0" coveredstatements="0"/>
+                <class name="SquareTest">
+                    <metrics coveredelements="0" coveredconditionals="0" complexity="3" coveredmethods="0" methods="3" elements="7" statements="4" conditionals="0" coveredstatements="0"/>
+                </class>
+                <line complexity="1" visibility="public" signature="data() : Collection&lt;Object[]&gt;" num="12" count="0" type="method"/>
+                <line num="14" count="0" type="stmt"/>
+                <line complexity="1" visibility="public" signature="SquareTest(int,int)" num="22" count="0" type="method"/>
+                <line num="23" count="0" type="stmt"/>
+                <line num="24" count="0" type="stmt"/>
+                <line complexity="1" visibility="public" signature="test() : void" num="27" count="0" type="method"/>
+                <line num="29" count="0" type="stmt"/>
+            </file>
+        </package>
+    </testproject>
+</coverage>

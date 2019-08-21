@@ -22,10 +22,12 @@ package com.sonar.clover.it;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sonar.wsclient.services.Resource;
-import org.sonar.wsclient.services.ResourceQuery;
 
 import java.io.File;
 
@@ -35,6 +37,8 @@ public class CloverTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
+    .setSonarVersion("6.7.5")
+    .setOrchestratorProperty("javaVersion", "LATEST_RELEASE")
     .addPlugin("java")
     .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")
     .addPlugin("groovy")
@@ -56,13 +60,16 @@ public class CloverTest {
       .setProjectVersion("1.0")
       .setSourceDirs("src/main/java")
       .setProjectDir(new File("projects/reuseReport"))
-      .setProperty("sonar.clover.reportPath", "clover.xml");
+      .setProperty("sonar.clover.reportPath", "clover.xml")
+      .setProperty("sonar.java.binaries", "target/classes");
     if (!orchestrator.getConfiguration().getPluginVersion("clover").isGreaterThan("2.9")) {
       analysis.setProperty("sonar.java.coveragePlugin", "clover");
     }
+
     orchestrator.executeBuild(analysis);
-    assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(4);
-    assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(2);
+
+    assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(8);
+    assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(4);
 
     assertThat(getMeasure(file, "files")).isEqualTo(1);
     assertThat(getMeasure(file, "lines_to_cover")).isEqualTo(4);
@@ -83,17 +90,26 @@ public class CloverTest {
       .setLanguage("grvy")
       .setProjectDir(new File("projects/groovy-clover-sample"))
       .setProperty("sonar.clover.reportPath", "clover.xml");
+
     orchestrator.executeBuild(analysis);
+
     assertThat(getMeasure(project, "lines_to_cover")).isEqualTo(2);
     assertThat(getMeasure(project, "uncovered_lines")).isEqualTo(0);
+
     assertThat(getMeasure(groovyFile, "files")).isEqualTo(1);
     assertThat(getMeasure(groovyFile, "lines_to_cover")).isEqualTo(2);
     assertThat(getMeasure(groovyFile, "uncovered_lines")).isEqualTo(0);
   }
 
   private Integer getMeasure(String resourceKey, String metricKey) {
-    Resource resource = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics(resourceKey, metricKey));
-    return resource != null ? resource.getMeasureIntValue(metricKey) : null;
-  }
+    final String body = orchestrator.getServer().newHttpCall("/api/measures/component").setParam("component", resourceKey).setParam("metricKeys", metricKey).execute().getBodyAsString();
 
+    try {
+      final JSONObject componentJson = (JSONObject) ((JSONObject) new JSONParser().parse(body)).get("component");
+      String result = (String) ((JSONObject) ((JSONArray) componentJson.get("measures")).get(0)).get("value");
+      return result == null ? null : Integer.valueOf(result);
+    } catch (ParseException pe) {
+      return null;
+    }
+  }
 }

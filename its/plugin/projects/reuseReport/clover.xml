@@ -10,11 +10,27 @@
             <class name="HelloWorld">
                <metrics methods="2" conditionals="2" coveredstatements="1" coveredmethods="1" complexity="3" coveredconditionals="1" statements="2" coveredelements="3" elements="6"/>
             </class>
-            <line num="5" count="0" complexity="1" type="method" signature="neverCalled() : void"/>
-            <line num="6" count="0" type="stmt"/>
-            <line num="9" count="1" complexity="2" type="method" signature="isPositive(int) : boolean"/>
-            <line num="10" count="1" type="stmt"/>
-            <line num="10" falsecount="1" type="cond" truecount="0"/>
+            <line num="3" count="0" complexity="1" type="method" signature="neverCalled() : void"/>
+            <line num="4" count="0" type="stmt"/>
+            <line num="7" count="1" complexity="2" type="method" signature="isPositive(int) : boolean"/>
+            <line num="8" count="1" type="stmt"/>
+            <line num="8" falsecount="1" type="cond" truecount="0"/>
+         </file>
+         <file name="DTO.java" path="src/main/java/DTO.java">
+            <metrics classes="1" methods="2" conditionals="0" ncloc="18" coveredstatements="1" coveredmethods="1" complexity="1" coveredconditionals="0" statements="2" loc="61" coveredelements="4" elements="5"/>
+            <class name="DTO">
+               <metrics coveredelements="4" coveredconditionals="0" complexity="1" coveredmethods="1" methods="1" elements="5" statements="1" conditionals="0" coveredstatements="1"/>
+            </class>
+            <line complexity="1" visibility="public" signature="setItem1(String) : void" num="18" count="5" type="method"/>
+            <line num="19" count="5" type="stmt"/>
+            <line complexity="1" visibility="public" signature="setItem2(String) : void" num="26" count="0" type="method"/>
+            <line num="27" count="0" type="stmt"/>
+         </file>
+         <file name="OmittedDTO.java" path="src/main/java/OmittedDTO.java">
+            <metrics classes="1" methods="0" conditionals="0" ncloc="18" coveredstatements="0" coveredmethods="0" complexity="0" coveredconditionals="0" statements="0" loc="61" coveredelements="0" elements="0"/>
+            <class name="OmittedDTO">
+               <metrics classes="1" methods="0" conditionals="0" ncloc="18" coveredstatements="0" coveredmethods="0" complexity="0" coveredconditionals="0" statements="0" loc="61" coveredelements="0" elements="0"/>
+            </class>
          </file>
       </package>
    </project>

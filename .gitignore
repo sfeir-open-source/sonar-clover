@@ -26,3 +26,5 @@ Icon?
 Thumbs.db 
 # Folder config file
 Desktop.ini
+its/plugin/projects/groovy-clover-sample/.sonar/*
+its/plugin/projects/reuseReport/.sonar/*

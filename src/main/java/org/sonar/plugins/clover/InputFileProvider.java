@@ -27,7 +27,7 @@ public class InputFileProvider {
 
   private final FileSystem fs;
 
-  public InputFileProvider(FileSystem fs) {
+  InputFileProvider(FileSystem fs) {
     this.fs = fs;
   }
 
