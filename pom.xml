@@ -10,7 +10,7 @@
   <groupId>org.cheztone</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
-  <version>4.0-SNAPSHOT</version>
+  <version>4.0</version>
 
   <name>Sonar Clover Plugin</name>
   <description><![CDATA[Get code coverage with <a href="http://openclover.org/">OpenClover</a>.]]></description>
@@ -29,7 +29,7 @@
     <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-clover.git</connection>
     <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-clover.git</developerConnection>
     <url>https://github.com/SonarQubeCommunity/sonar-clover</url>
-    <tag>HEAD</tag>
+    <tag>4.0</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issues</system>
