@@ -26,7 +26,7 @@ quality-analysis: build-package ## Allows to run static quality analyis
 	-Dsonar.analysis.repository=$$TRAVIS_REPO_SLUG
 
 deploy-package: ## Allows to deploy artifacts to our registry
-	@echo "Not implemented yet"
+	mvn release:prepare release:perform
 
 
 .DEFAULT_GOAL := help

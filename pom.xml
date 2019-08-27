@@ -100,4 +100,13 @@
   <build>
     <finalName>${project.artifactId}</finalName>
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray-sfeir-open-source-maven</id>
+      <name>sfeir-open-source-maven</name>
+      <url>https://api.bintray.com/maven/sfeir-open-source/maven/sonar-clover/;publish=1</url>
+    </repository>
+  </distributionManagement>
+
 </project>
