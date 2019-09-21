@@ -40,7 +40,6 @@
     <sonar.version>6.7.1</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
-    <sonar.projectVersion>${project.version}</sonar.projectVersion>
     <license.owner>SonarSource</license.owner>
     <license.years>2008</license.years>
     <license.mailto>sonarqube@googlegroups.com</license.mailto>
