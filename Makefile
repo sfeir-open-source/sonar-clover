@@ -17,7 +17,6 @@ quality-analysis: build-package ## Allows to run static quality analyis
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn sonar:sonar \
 	-Dsonar.host.url=$$SONAR_HOST_URL \
 	-Dsonar.login=$$SONAR_TOKEN \
-	-Dsonar.projectVersion=$$(mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout) \
 	-Dsonar.projectKey=$$SONAR_PROJECT_KEY \
   	-Dsonar.organization=$$SONAR_ORGANIZATION \
 	-Dsonar.analysis.buildNumber=$$TRAVIS_BUILD_NUMBER \
