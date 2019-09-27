@@ -35,6 +35,14 @@
     <url>https://github.com/sfeir-open-source/sonar-clover/issues</url>
   </issueManagement>
 
+  <distributionManagement>
+    <repository>
+      <id>bintray-sfeir-open-source-maven</id>
+      <name>sfeir-open-source-maven</name>
+      <url>https://api.bintray.com/maven/sfeir-open-source/maven/sonar-clover/;publish=1</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <sonar.version>6.7.1</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
