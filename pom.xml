@@ -4,17 +4,16 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>48</version>
+    <version>49</version>
   </parent>
 
-  <groupId>org.cheztone</groupId>
+  <groupId>org.sfeir</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
   <version>4.0-SNAPSHOT</version>
 
   <name>Sonar Clover Plugin</name>
-  <description><![CDATA[Get code coverage with <a href="http://openclover.org/">OpenClover</a>.]]></description>
-  <url>http://redirect.sonarsource.com/plugins/clover.html</url>
+  <description>Get code coverage with http://openclover.org/</description>
   <inceptionYear>2018</inceptionYear>
 
   <licenses>
@@ -26,20 +25,21 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-clover.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-clover.git</developerConnection>
-    <url>https://github.com/SonarQubeCommunity/sonar-clover</url>
+    <connection>scm:git:git@github.com:sfeir-open-source/sonar-clover.git</connection>
+    <developerConnection>scm:git:git@github.com:sfeir-open-source/sonar-clover.git</developerConnection>
+    <url>https://github.com/sfeir-open-source/sonar-clover</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/SonarQubeCommunity/sonar-clover/issues</url>
+    <url>https://github.com/sfeir-open-source/sonar-clover/issues</url>
   </issueManagement>
 
   <properties>
     <sonar.version>6.7.1</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
+    <sonar.pluginUrl>${project.scm.url}</sonar.pluginUrl>
     <license.owner>SonarSource</license.owner>
     <license.years>2008</license.years>
     <license.mailto>sonarqube@googlegroups.com</license.mailto>
