@@ -10,9 +10,7 @@ jobs:
     - script: 'if [ ! -z "$SONAR_HOST_URL" ]; then bash -c "make quality-analysis"; fi'
     - stage: deploy
       install: skip # bundle install is not required
-      branches:
-        only:
-          - master
+      if: tag IS present
       script: make deploy-package
 
 

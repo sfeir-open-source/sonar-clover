@@ -25,7 +25,7 @@ quality-analysis: build-package ## Allows to run static quality analyis
 	-Dsonar.analysis.repository=$$TRAVIS_REPO_SLUG
 
 deploy-package: ## Allows to deploy artifacts to our registry
-	@echo "Not implemented yet"
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn deploy --settings
 
 
 .DEFAULT_GOAL := help
