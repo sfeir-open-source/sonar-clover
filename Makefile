@@ -18,7 +18,7 @@ quality-analysis: build-package ## Allows to run static quality analyis
 	-Dsonar.host.url=$$SONAR_HOST_URL \
 	-Dsonar.login=$$SONAR_TOKEN \
 	-Dsonar.projectKey=$$SONAR_PROJECT_KEY \
-  	-Dsonar.organization=$$SONAR_ORGANIZATION \
+  	-Dsonar.organization=sfeir-open-source \
 	-Dsonar.analysis.buildNumber=$$TRAVIS_BUILD_NUMBER \
 	-Dsonar.analysis.pipeline=$$TRAVIS_BUILD_NUMBER \
 	-Dsonar.analysis.sha1=$$TRAVIS_COMMIT  \
