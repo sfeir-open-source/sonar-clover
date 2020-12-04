@@ -63,7 +63,7 @@ public class CloverSensor implements Sensor {
   @Override
   public void describe(SensorDescriptor descriptor) {
     descriptor.name("Clover Coverage Analysis");
-    descriptor.onlyOnLanguages("java", "groovy");
+    descriptor.onlyOnLanguages("java", "grvy");
   }
 
   @Override
