@@ -1,7 +1,7 @@
 DOCKER_IMG=openjdk:11.0.11-jdk
 
 run-test: ## Allows to run all unit tests
-	docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw test --batch-mode
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw test --batch-mode
 
 build-package: ## Allows to build artifacts
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw package --batch-mode
@@ -12,10 +12,11 @@ quality-analysis: build-package ## Allows to run static quality analyis
 	-Dsonar.login=$$SONAR_TOKEN \
 	-Dsonar.projectKey=$$SONAR_PROJECT_KEY \
   	-Dsonar.organization=sfeir-open-source \
-	-Dsonar.analysis.buildNumber=$$TRAVIS_BUILD_NUMBER \
-	-Dsonar.analysis.pipeline=$$TRAVIS_BUILD_NUMBER \
-	-Dsonar.analysis.sha1=$$TRAVIS_COMMIT  \
-	-Dsonar.analysis.repository=$$TRAVIS_REPO_SLUG --batch-mode
+  	-Dsonar.branch.name=$$GITHUB_REF \
+	-Dsonar.analysis.buildNumber=$$GITHUB_RUN_NUMBER \
+	-Dsonar.analysis.pipeline=$$GITHUB_RUN_ID \
+	-Dsonar.analysis.sha1=$$GITHUB_SHA  \
+	-Dsonar.analysis.repository=$$GITHUB_REPOSITORY --batch-mode
 
 run-integration-platform: build-package ## Allows to run local integrations test with docker
 	@docker network create sonar || \
