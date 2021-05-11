@@ -1,11 +1,13 @@
+DOCKER_IMG=openjdk:11.0.11-jdk
+
 run-test: ## Allows to run all unit tests
-	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn test --batch-mode
+	docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw test --batch-mode
 
 build-package: ## Allows to build artifacts
-	@./mvnw package --batch-mode
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw package --batch-mode
 
 quality-analysis: build-package ## Allows to run static quality analyis
-	@./mvnw sonar:sonar \
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw sonar:sonar \
 	-Dsonar.host.url=$$SONAR_HOST_URL \
 	-Dsonar.login=$$SONAR_TOKEN \
 	-Dsonar.projectKey=$$SONAR_PROJECT_KEY \
@@ -21,11 +23,12 @@ run-integration-platform: build-package ## Allows to run local integrations test
 	docker run -p 9000:9000 --name sonar-instance --net sonar --rm test-instance
 
 run-integration-test: ## Allows to push a report in integration platform
-	@docker run --mount type=bind,src=$$(pwd)/its/integration,target=/usr/src -w /usr/src --net sonar maven:alpine \
-	 mvn clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 --batch-mode
+	@docker run --mount type=bind,src=$$(pwd)/its/integration,target=/usr/src -w /usr/src --net sonar $(DOCKER_IMG) \
+	 ./mvnw clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 --batch-mode
 
 deploy-package: ## Allows to deploy artifacts to our registry
-	@./mvnw deploy --settings github.settings.xml --batch-mode
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src -e ARTIFACT_REGISTRY_USER -e ARTIFACT_REGISTRY_PASSWORD $(DOCKER_IMG) \
+	./mvnw deploy --settings github.settings.xml --batch-mode
 
 
 .DEFAULT_GOAL := help run-integration-platform
