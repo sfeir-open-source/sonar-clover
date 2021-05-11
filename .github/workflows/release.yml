@@ -1,0 +1,16 @@
+name: release
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - '*'
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/auto-cancel-redundant-workflow@v1
+      - uses: actions/checkout@v2
+      - run: make run-test
+      - run: if [ ! -z "$SONAR_HOST_URL" ]; then bash -c "make quality-analysis"; fi
+      - run: make deploy-package

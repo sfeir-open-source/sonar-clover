@@ -1,8 +1,8 @@
 run-test: ## Allows to run all unit tests
-	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn test
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src maven:alpine mvn test --batch-mode
 
 build-package: ## Allows to build artifacts
-	@./mvnw package
+	@./mvnw package --batch-mode
 
 quality-analysis: build-package ## Allows to run static quality analyis
 	@./mvnw sonar:sonar \
@@ -13,7 +13,7 @@ quality-analysis: build-package ## Allows to run static quality analyis
 	-Dsonar.analysis.buildNumber=$$TRAVIS_BUILD_NUMBER \
 	-Dsonar.analysis.pipeline=$$TRAVIS_BUILD_NUMBER \
 	-Dsonar.analysis.sha1=$$TRAVIS_COMMIT  \
-	-Dsonar.analysis.repository=$$TRAVIS_REPO_SLUG
+	-Dsonar.analysis.repository=$$TRAVIS_REPO_SLUG --batch-mode
 
 run-integration-platform: build-package ## Allows to run local integrations test with docker
 	@docker network create sonar || \
@@ -22,10 +22,10 @@ run-integration-platform: build-package ## Allows to run local integrations test
 
 run-integration-test: ## Allows to push a report in integration platform
 	@docker run --mount type=bind,src=$$(pwd)/its/integration,target=/usr/src -w /usr/src --net sonar maven:alpine \
-	 mvn clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000
+	 mvn clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 --batch-mode
 
 deploy-package: ## Allows to deploy artifacts to our registry
-	@./mvnw deploy --settings travis.settings.xml
+	@./mvnw deploy --settings github.settings.xml --batch-mode
 
 
 .DEFAULT_GOAL := help run-integration-platform
