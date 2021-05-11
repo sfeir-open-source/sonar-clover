@@ -7,10 +7,10 @@
     <version>49</version>
   </parent>
 
-  <groupId>org.sfeir</groupId>
+  <groupId>io.github.sfeir-open-source</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
-  <version>4.1</version>
+  <version>4.1-SNAPSHOT</version>
 
   <name>Sonar Clover Plugin</name>
   <description>Get code coverage with http://openclover.org/</description>
@@ -36,10 +36,14 @@
   </issueManagement>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>nexus-snapshot</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>bintray-sfeir-open-source-maven</id>
+      <id>nexus-release</id>
       <name>sfeir-open-source-maven</name>
-      <url>https://api.bintray.com/maven/sfeir-open-source/maven/sonar-clover/;publish=1</url>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 
