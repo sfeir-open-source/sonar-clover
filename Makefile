@@ -7,16 +7,9 @@ build-package: ## Allows to build artifacts
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw package --batch-mode
 
 quality-analysis: build-package ## Allows to run static quality analyis
-	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw sonar:sonar \
-	-Dsonar.host.url=https://sonarcloud.io \
-	-Dsonar.login=$$SONAR_TOKEN \
-	-Dsonar.projectKey=sfeir-open-source_sonar-clover \
-  	-Dsonar.organization=sfeir-open-source \
-  	-Dsonar.branch.name=$$GITHUB_REF \
-	-Dsonar.analysis.buildNumber=$$GITHUB_RUN_NUMBER \
-	-Dsonar.analysis.pipeline=$$GITHUB_RUN_ID \
-	-Dsonar.analysis.sha1=$$GITHUB_SHA  \
-	-Dsonar.analysis.repository=$$GITHUB_REPOSITORY --batch-mode
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src \
+	-e SONAR_TOKEN -e GITHUB_REF -e GITHUB_RUN_NUMBER -e GITHUB_RUN_ID -e GITHUB_SHA -e GITHUB_REPOSITORY \
+	$(DOCKER_IMG) ./mvnw sonar:sonar --settings github.settings.xml --batch-mode
 
 run-integration-platform: build-package ## Allows to run local integrations test with docker
 	@docker network create sonar || \

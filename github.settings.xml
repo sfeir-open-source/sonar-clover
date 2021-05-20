@@ -18,4 +18,26 @@
             <passphrase>${env.GPG_PASSPHRASE}</passphrase>
         </server>
     </servers>
+    <pluginGroups>
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+    </pluginGroups>
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.login>${env.SONAR_TOKEN}</sonar.login>
+                <sonar.projectKey>sfeir-open-source_sonar-clover</sonar.projectKey>
+                <sonar.organization>sfeir-open-source</sonar.organization>
+                <sonar.branch.name>${env.GITHUB_REF}</sonar.branch.name>
+                <sonar.analysis.buildNumber>${env.GITHUB_RUN_NUMBER}</sonar.analysis.buildNumber>
+                <sonar.analysis.pipeline>${env.GITHUB_RUN_ID}</sonar.analysis.pipeline>
+                <sonar.analysis.sha1>${env.GITHUB_SHA}</sonar.analysis.sha1>
+                <sonar.analysis.repository>${env.GITHUB_REPOSITORY}</sonar.analysis.repository>
+            </properties>
+        </profile>
+    </profiles>
 </settings>
