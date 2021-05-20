@@ -28,8 +28,10 @@ run-integration-test: ## Allows to push a report in integration platform
 	 ./mvnw clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 --batch-mode
 
 deploy-package: ## Allows to deploy artifacts to our registry
-	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src -e ARTIFACT_REGISTRY_USER -e ARTIFACT_REGISTRY_PASSWORD $(DOCKER_IMG) \
-	./mvnw deploy --settings github.settings.xml --batch-mode
+	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src -e GPG_PASSPHRASE -e ARTIFACT_REGISTRY_USER -e ARTIFACT_REGISTRY_PASSWORD $(DOCKER_IMG) \
+	sh -c "echo \"$$GPG_PRIVATE_KEY\" > ~/secret.txt && \
+	gpg -v --batch --import < ~/secret.txt && \
+    ./mvnw deploy --settings github.settings.xml --batch-mode"
 
 
 .DEFAULT_GOAL := help run-integration-platform

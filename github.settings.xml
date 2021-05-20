@@ -13,5 +13,9 @@
             <username>${env.ARTIFACT_REGISTRY_USER}</username>
             <password>${env.ARTIFACT_REGISTRY_PASSWORD}</password>
         </server>
+        <server>
+            <id>gpg.passphrase</id>
+            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+        </server>
     </servers>
 </settings>
