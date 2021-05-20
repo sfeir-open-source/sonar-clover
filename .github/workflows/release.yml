@@ -14,9 +14,11 @@ jobs:
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       ARTIFACT_REGISTRY_USER: ${{ secrets.ARTIFACT_REGISTRY_USER }}
       ARTIFACT_REGISTRY_PASSWORD: ${{ secrets.ARTIFACT_REGISTRY_PASSWORD }}
+      GPG_PASSPHRASE: $${{ secrets.GPG_PASSPHRASE }}
+      GPG_PRIVATE_KEY: $${{ secrets.GPG_PRIVATE_KEY }}
     steps:
       - uses: technote-space/auto-cancel-redundant-workflow@v1
       - uses: actions/checkout@v2
       - run: make run-test
-      - run: if [ ! -z "$SONAR_HOST_URL" ]; then bash -c "make quality-analysis"; fi
+      - run: make quality-analysis
       - run: make deploy-package
