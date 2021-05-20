@@ -8,9 +8,9 @@ build-package: ## Allows to build artifacts
 
 quality-analysis: build-package ## Allows to run static quality analyis
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src $(DOCKER_IMG) ./mvnw sonar:sonar \
-	-Dsonar.host.url=$$SONAR_HOST_URL \
+	-Dsonar.host.url=https://sonarcloud.io \
 	-Dsonar.login=$$SONAR_TOKEN \
-	-Dsonar.projectKey=$$SONAR_PROJECT_KEY \
+	-Dsonar.projectKey=sfeir-open-source_sonar-clover \
   	-Dsonar.organization=sfeir-open-source \
   	-Dsonar.branch.name=$$GITHUB_REF \
 	-Dsonar.analysis.buildNumber=$$GITHUB_RUN_NUMBER \
