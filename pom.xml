@@ -10,7 +10,7 @@
   <groupId>io.github.sfeir-open-source</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
-  <version>4.1-SNAPSHOT</version>
+  <version>4.2-SNAPSHOT</version>
 
   <name>Sonar Clover Plugin</name>
   <description>Get code coverage with http://openclover.org/</description>
