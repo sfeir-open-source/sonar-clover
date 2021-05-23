@@ -7,11 +7,8 @@ jobs:
   Build:
     runs-on: ubuntu-latest
     env:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
     steps:
       - uses: technote-space/auto-cancel-redundant-workflow@v1
       - uses: actions/checkout@v2
       - run: make run-test
-      - run: make quality-analysis

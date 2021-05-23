@@ -8,6 +8,7 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
+    environment: default
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       ARTIFACT_REGISTRY_USER: ${{ secrets.ARTIFACT_REGISTRY_USER }}
@@ -18,6 +19,5 @@ jobs:
       - uses: technote-space/auto-cancel-redundant-workflow@v1
       - uses: actions/checkout@v2
       - run: make run-test
-      - run: if [ ! -z "$SONAR_TOKEN" ]; then echo "Well, the sonar token as been set"; fi
       - run: make quality-analysis
       - run: make deploy-package
