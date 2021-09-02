@@ -18,7 +18,20 @@ run-integration-platform: build-package ## Allows to run local integrations test
 
 run-integration-test: ## Allows to push a report in integration platform
 	@docker run --mount type=bind,src=$$(pwd)/its/integration,target=/usr/src -w /usr/src --net sonar $(DOCKER_IMG) \
-	 ./mvnw clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 --batch-mode
+	 ./mvnw clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 \
+	 -Dsonar.login=admin -Dsonar.password=admin --batch-mode
+
+run-groovy-test: ## Allows to push groovyproject a report in integration platform
+	@docker run --mount type=bind,src=$$(pwd)/its/groovyproject,target=/usr/src -w /usr/src --net sonar $(DOCKER_IMG) \
+	 ./mvnw clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 \
+	 -Dsonar.login=admin -Dsonar.password=admin --batch-mode
+
+run-plugin-test: ## Allows to push plugin a report in integration platform
+	@docker run --mount type=bind,src=$$(pwd)/its/plugin,target=/usr/src -w /usr/src --net sonar $(DOCKER_IMG) \
+	 ./mvnw clean clover:setup test clover:aggregate clover:clover sonar:sonar -Dsonar.sources=src -Dsonar.host.url=http://sonar-instance:9000 \
+	 -Dsonar.login=admin -Dsonar.password=admin --batch-mode
+
+run-its-tests: run-integration-test run-groovy-test run-plugin-test ## Allows to push reports in integration platform
 
 deploy-package: ## Allows to deploy artifacts to our registry
 	@docker run --mount type=bind,src=$$(pwd),target=/usr/src -w /usr/src -e GPG_PASSPHRASE -e ARTIFACT_REGISTRY_USER -e ARTIFACT_REGISTRY_PASSWORD $(DOCKER_IMG) \
@@ -27,7 +40,8 @@ deploy-package: ## Allows to deploy artifacts to our registry
     ./mvnw deploy --settings github.settings.xml --batch-mode"
 
 
-.DEFAULT_GOAL := help run-integration-platform
+.DEFAULT_GOAL := help
+
 .PHONY: test help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
