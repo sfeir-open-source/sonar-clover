@@ -50,7 +50,7 @@
     <license.owner>SonarSource</license.owner>
     <license.years>2008</license.years>
     <license.mailto>sonarqube@googlegroups.com</license.mailto>
-    <jdk.min.version>11</jdk.min.version>
+    <jdk.min.version>8</jdk.min.version>
   </properties>
 
   <dependencies>
