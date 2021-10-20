@@ -32,8 +32,9 @@ public class CloverPluginTest {
   @Test
   public void test_define() {
     final Plugin.Context context = new Plugin.Context(SonarRuntimeImpl.forSonarQube(
-            Version.parse("6.7.4"),
-            SonarQubeSide.SCANNER));
+            Version.parse("9.1.0"),
+            null,
+            null));
     new CloverPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(1);
   }
