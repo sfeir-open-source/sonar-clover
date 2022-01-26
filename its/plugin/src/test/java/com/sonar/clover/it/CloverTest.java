@@ -37,7 +37,7 @@ public class CloverTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-    .setSonarVersion("6.7.5")
+    .setSonarVersion("9.1.0")
     .setOrchestratorProperty("javaVersion", "LATEST_RELEASE")
     .addPlugin("java")
     .setOrchestratorProperty("groovyVersion", "LATEST_RELEASE")

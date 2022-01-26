@@ -21,6 +21,7 @@ package org.sonar.plugins.clover;
 
 import org.junit.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
@@ -32,8 +33,9 @@ public class CloverPluginTest {
   @Test
   public void test_define() {
     final Plugin.Context context = new Plugin.Context(SonarRuntimeImpl.forSonarQube(
-            Version.parse("6.7.4"),
-            SonarQubeSide.SCANNER));
+            Version.parse("9.1.0"),
+            SonarQubeSide.SCANNER,
+            SonarEdition.COMMUNITY));
     new CloverPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(1);
   }

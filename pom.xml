@@ -5,7 +5,7 @@
   <groupId>io.github.sfeir-open-source</groupId>
   <artifactId>sonar-clover-plugin</artifactId>
   <packaging>sonar-plugin</packaging>
-  <version>4.2-SNAPSHOT</version>
+  <version>5.0-SNAPSHOT</version>
 
   <name>Sonar Clover Plugin</name>
   <description>Get code coverage with http://openclover.org/</description>
@@ -43,7 +43,7 @@
   </distributionManagement>
 
   <properties>
-    <sonar.version>6.7</sonar.version>
+    <sonar.version>9.1.0.47736</sonar.version>
     <sonar.pluginName>Clover</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.clover.CloverPlugin</sonar.pluginClass>
     <sonar.pluginUrl>${project.scm.url}</sonar.pluginUrl>
@@ -57,6 +57,13 @@
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
+      <version>${sonar.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonarsource.sonarqube</groupId>
+      <artifactId>sonar-plugin-api-impl</artifactId>
       <version>${sonar.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -85,7 +92,31 @@
       <version>3.0.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>woodstox-core-lgpl</artifactId>
+      <version>4.4.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.staxmate</groupId>
+      <artifactId>staxmate</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+
     <!-- unit tests -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <version>5.8.1</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-testing-harness</artifactId>
@@ -102,6 +133,7 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <version>1.9.5</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
