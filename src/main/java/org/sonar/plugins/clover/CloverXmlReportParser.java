@@ -24,8 +24,8 @@ import org.codehaus.staxmate.in.SMEvent;
 import org.codehaus.staxmate.in.SMFilterFactory;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.codehaus.staxmate.in.SimpleFilter;
+import org.sonar.api.batch.fs.IndexedFile;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 import org.sonar.api.utils.MessageException;
@@ -144,34 +144,35 @@ class CloverXmlReportParser {
 
     private void saveHitsData(InputFile resource, SMInputCursor lineCursor) throws ParseException, XMLStreamException {
         final NewCoverage coverage = context.newCoverage().onFile(resource);
-        // cursor should be on the metrics element
-        if (!canBeIncludedInFileMetrics(lineCursor)) {
-            // cursor should now be on the line cursor; exclude this file if there are no elements to cover
-            ((DefaultInputFile) resource).setExcludedForCoverage(true);
-        }
 
         while (lineCursor.getNext() != null) {
-            // skip class elements on format 2_3_2
             if (isClass(lineCursor)) {
                 continue;
             }
-            final int lineId = Integer.parseInt(lineCursor.getAttrValue("num"));
-            String count = lineCursor.getAttrValue("count");
-            if (StringUtils.isNotBlank(count)) {
-                final int hits = Integer.parseInt(count);
-                coverage.lineHits(lineId, hits);
-            } else {
-                int trueCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("truecount"));
-                int falseCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("falsecount"));
-                int coveredConditions = 0;
-                if (trueCount > 0) {
-                    coveredConditions++;
-                }
-                if (falseCount > 0) {
-                    coveredConditions++;
-                }
 
-                coverage.conditions(lineId, 2, coveredConditions);
+            String lineNumber = lineCursor.getAttrValue("num");
+            String count = lineCursor.getAttrValue("count");
+
+            if (lineNumber != null && !lineNumber.equals("")) {
+                final int lineId = Integer.parseInt(lineNumber);
+
+                if (StringUtils.isNotBlank(count)) {
+                    final int hits = Integer.parseInt(count);
+                    coverage.lineHits(lineId, hits);
+                } else {
+                    int trueCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("truecount"));
+                    int falseCount = (int) ParsingUtils.parseNumber(lineCursor.getAttrValue("falsecount"));
+                    int coveredConditions = 0;
+
+                    if (trueCount > 0) {
+                        coveredConditions++;
+                    }
+                    if (falseCount > 0) {
+                        coveredConditions++;
+                    }
+
+                    coverage.conditions(lineId, 2, coveredConditions);
+                }
             }
         }
 
