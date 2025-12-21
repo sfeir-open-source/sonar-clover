@@ -1,0 +1,28 @@
+services:
+  sonarQube:
+    image: sonarqube-test-env:${VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION}
+    ports:
+      - '9000:9000'
+    healthcheck:
+      test: |
+        wget -q http://localhost:9000/api/system/status -O /tmp/status && cat /tmp/status | grep UP || exit 1
+  external-analysis:
+    image: eclipse-temurin:17-jdk
+    command: |
+      ./mvnw clean clover:setup test clover:aggregate 
+         clover:clover sonar:sonar -Dsonar.sources=src
+         -Dsonar.host.url=http://sonarQube:9000
+         -Dsonar.login=admin -Dsonar.password=admin --batch-mode
+    depends_on:
+      sonarQube:
+        condition: service_healthy
+    volumes:
+      - type: bind
+        source: ./its/integration
+        target: /usr/src
+    working_dir: /usr/src
